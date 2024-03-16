@@ -91,6 +91,52 @@ paths:
           description: Authentication failed due to invalid email or password
         '500':
           description: Internal server error
+  /api/users/change-password:
+    post:
+      summary: Change user password
+      description: This endpoint allows authenticated users to change their password by providing the old password and the new password.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: body
+          name: passwordDetails
+          description: Old and new password details
+          required: true
+          schema:
+            type: object
+            required:
+              - oldPassword
+              - newPassword
+            properties:
+              oldPassword:
+                type: string
+                format: password
+              newPassword:
+                type: string
+                format: password
+      responses:
+        '200':
+          description: Password changed successfully
+        '401':
+          description: Unauthorized or old password is incorrect
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
 definitions:
   User:
     type: object
