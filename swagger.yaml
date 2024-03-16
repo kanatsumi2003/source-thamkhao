@@ -53,6 +53,44 @@ paths:
             type: array
             items:
               $ref: '#/definitions/User'
+  /api/users/login:
+    post:
+      summary: Authenticate user and return JWT
+      description: >
+        This endpoint authenticates a user by their email and password, and returns a JWT if the authentication is successful.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: credentials
+          description: User's login credentials
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+      responses:
+        '200':
+          description: Authentication successful, returns JWT
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: JWT for authenticated user
+        '401':
+          description: Authentication failed due to invalid email or password
+        '500':
+          description: Internal server error
 definitions:
   User:
     type: object

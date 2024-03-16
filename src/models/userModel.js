@@ -18,4 +18,4 @@ class UserWithBase extends BaseModel {
     }
 }
 
-module.exports = { User, UserWithBase };
+module.exports = { User, UserWithBase };   
