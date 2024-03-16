@@ -1,0 +1,32 @@
+my-express-api/
+│
+├── node_modules/                # Thư mục chứa các gói NPM đã cài đặt
+│
+├── src/
+│   ├── api/                     # Thư mục chứa các route và logic xử lý của API
+│   │   ├── routes/              # Định nghĩa các route cho API
+│   │   │   ├── userRoutes.js    # Ví dụ: Các route liên quan đến người dùng
+│   │   │   └── productRoutes.js # Ví dụ: Các route liên quan đến sản phẩm
+│   │   │
+│   │   └── controllers/         # Các controllers xử lý logic cho mỗi route
+│   │       ├── userController.js
+│   │       └── productController.js
+│   │
+│   ├── config/                  # Cấu hình cho ứng dụng (database, env vars, etc.)
+│   │   └── db.js                # Cấu hình kết nối database
+│   │
+│   ├── middleware/              # Các middleware Express như xác thực, logger, etc.
+│   │   ├── authMiddleware.js    # Middleware cho xác thực
+│   │   └── errorMiddleware.js   # Xử lý lỗi tập trung
+│   │
+│   ├── models/                  # Các model dùng cho ORM hoặc tương tác database
+│   │   ├── userModel.js         # Model người dùng
+│   │   └── productModel.js      # Model sản phẩm
+│   │
+│   └── app.js                   # File khởi tạo và cấu hình chính của Express
+│
+├── .env                         # Biến môi trường (API keys, secrets, etc.)
+├── .gitignore                   # Định nghĩa những file và thư mục git nên bỏ qua
+├── package.json                 # Định nghĩa gói và các script
+├── package-lock.json            # Cố định phiên bản các gói phụ thuộc
+└── README.md                    # Tài liệu giới thiệu, hướng dẫn sử dụng API
