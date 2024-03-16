@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 
 // Tạo người dùng mới
-router.post('/users', userController.createUser);
+router.post('/', userController.createUser);
 
 // Thêm các route cho updateUser, deleteUser, getUser, getUsers
 

@@ -1,0 +1,81 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: User API
+  description: API for managing users
+host: localhost:3000
+basePath: /
+schemes:
+  - http
+paths:
+  /api/users:
+    post:
+      summary: Create a new user
+      description: ''
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: The user to create
+          schema:
+            type: object
+            required:
+              - email
+              - username
+              - password
+              - phoneNumber
+            properties:
+              email:
+                type: string
+              username:
+                type: string
+              password:
+                type: string
+              phoneNumber:
+                type: string
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Invalid input
+    get:
+      summary: Get a list of users
+      description: ''
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A list of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      emailConfirmed:
+        type: boolean
+      phoneConfirmed:
+        type: boolean
+      isDelete:
+        type: boolean
+      createTime:
+        type: string
+        format: date-time
+      updateTime:
+        type: string
+        format: date-time
+      isActive:
+        type: boolean

@@ -2,7 +2,8 @@ const express = require('express');
 const userRoutes = require('./src/api/routes/userRoutes.js');
 const swaggerUi = require('swagger-ui-express');
 // Định nghĩa swaggerDocument dựa trên comment của bạn hoặc file YAML
-
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
 const app = express();
 
 app.use(express.json());
