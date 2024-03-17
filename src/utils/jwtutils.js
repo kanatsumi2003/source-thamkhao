@@ -8,6 +8,7 @@ async function encodejwt(user){
         process.env.REACT_APP_JWT_SECRET,
         { expiresIn: process.env.REACT_APP_EXPIRE_TOKEN }
     );
+    console.log(token);
     return  token;
 }
 async function decodejwt(jwtToken){

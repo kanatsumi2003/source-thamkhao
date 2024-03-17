@@ -1,5 +1,5 @@
 const { User, UserWithBase } = require('../../models/userModel');
-const mongoService = require('../services/mongoService');
+const userService = require('../services/userService');
 const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 const { encodejwt, decodejwt } = require('../../utils/jwtutils'); // Đảm bảo đường dẫn đúng
 const jwt = require('jsonwebtoken');
@@ -17,19 +17,16 @@ async function createUser(req, res) {
         const user = new User(req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role_id);
         console.log(user);
 
-        const existUser = await mongoService.findDocuments(collectionName, {
-            $or: [
-                { email: user.email },
-                { username: user.username }
-            ]
-        });
-        if (existUser && existUser.length > 0) {
+        const existUser = await userService.getUserByEmailAndUsername(user.email,user.username);
+        if (existUser!==null) {
             return res.status(401).json({ message: "Email/Username đã tồn tại" });
         }
-        user.password = await hashPassword(user.password);
-        const userWithBase = new UserWithBase(user);
-        const result = await mongoService.insertDocuments(collectionName, [userWithBase]);
-        const userData = { ...userWithBase };
+        const result = await userService.createUser(user);
+        if(result===null)
+        {
+            res.status(400).json({ message: 'Không thể tạo User mới'});
+        }
+        const userData = { ...result };
         delete userData.password;
         res.status(201).json({ message: 'User created', data: userData });
     } catch (error) {
@@ -41,12 +38,11 @@ async function login(req, res) {
         const { email, password } = req.body;
         console.log(email);
         // Sử dụng mongoService để tìm kiếm người dùng bằng email
-        const users = await mongoService.findDocuments(collectionName, { email: email });
-        console.log(users);
-        if (!users || users.length <= 0) {
+        const user = await userService.getUserByEmail(email);
+        console.log(user);
+        if (!user) {
             return res.status(401).json({ message: "Email không tồn tại" });
         }
-        const user = users[0];
         // Sử dụng passwordUtils để so sánh mật khẩu
         const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
@@ -60,7 +56,7 @@ async function login(req, res) {
         //     process.env.REACT_APP_JWT_SECRET,
         //     { expiresIn: '1h' }
         // );
-        const token = encodejwt(user);
+        const token = await encodejwt(user);
 
         // Gửi token cho client
         res.json({ token });
@@ -73,24 +69,23 @@ async function changePassword(req, res) {
     try {
         const { oldPassword,newPassword } = req.body;
         const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
-        console.log(userId);
-        const users = await mongoService.findDocuments(collectionName, { _id: new ObjectId(userId) });
-        const user = users[0] || null; // Lấy phần tử đầu tiên hoặc null nếu mảng rỗng
+        const user = await userService.getUserById(userId);
         if(user==null){
             return res.status(404).json({ message: "Không tìm thấy user" });
         }
         // So sánh mật k
-        const hashedOldPassword = await hashPassword(oldPassword);
-        if(!user.password===hashedOldPassword)
+        const isMatch = await comparePassword(oldPassword, user.password);
+
+        if(!isMatch)
         {
             return res.status(401).json({ message: "Password cũ không đúng" });
         }
         // Băm mật khẩu mới
-        const hashedPassword = await hashPassword(newPassword);
+        // const hashedPassword = await hashPassword(newPassword);
         // Cập nhật mật khẩu trong cơ sở dữ liệu
-        const updateResult = await mongoService.updateDocument(collectionName, { _id: new ObjectId(userId)  }, { password: hashedPassword });
+        const updateResult = await userService.changePasswordUser(userId,oldPassword,newPassword);
 
-        if (updateResult.modifiedCount === 0) {
+        if (!updateResult) {
             throw new Error("Không thể cập nhật mật khẩu");
         }
 
