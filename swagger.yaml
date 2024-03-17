@@ -25,12 +25,15 @@ paths:
           schema:
             type: object
             required:
+              - fullname
               - email
               - username
               - password
               - phoneNumber
               - role_Id
             properties:
+              fullname:
+                type: string
               email:
                 type: string
               username:

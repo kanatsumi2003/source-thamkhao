@@ -4,10 +4,10 @@ const { hashPassword, comparePassword } = require('../utils/passwordUtils'); // 
 const bcrypt = require('bcryptjs');
 
 class User {
-    constructor(email, username, password, phoneNumber,role_id) {
+    constructor(FullName, email, username, password, phoneNumber,role_id) {
+        this.FullName=FullName;
         this.email = email;
-        
-        this.username = username.toLowerCase();
+        this.username = username;
         this.password = password; // Nhớ băm mật khẩu trước khi lưu
         this.phoneNumber = phoneNumber;
         this.emailConfirmed = false;
@@ -43,6 +43,18 @@ class UserWithBase extends BaseModel {
     constructor(user) {
         super();
         Object.assign(this, user);
+    }
+    async isCorrectPassword(plainPassword) {
+        try {
+            console.log("isCorrectPassword");
+            console.log(plainPassword)
+            console.log(this.password)
+            // So sánh mật khẩu đã băm trong cơ sở dữ liệu với mật khẩu dạng văn bản rõ ràng đã được nhập
+            return await bcrypt.compare(plainPassword, this.password);
+        } catch (error) {
+            console.error('Error comparing passwords:', error);
+            return false;
+        }
     }
 }
 

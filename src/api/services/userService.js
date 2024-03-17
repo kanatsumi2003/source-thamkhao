@@ -2,18 +2,22 @@ const mongoService = require('../services/mongoService');
 const mongoose = require('mongoose'); // Import module mongoose
 const { User, UserWithBase } = require('../../models/userModel');
 const { Role } = require('../../models/roleModel');
-const { RoleService } = require('../services/roleService');
+const RoleService = require('../services/roleService');
 const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 
 const collectionName = 'users'
 async function createUser(user) {
     try {
-        const checkRole = RoleService.getUserById(user.role_id);
+        console.log("createUser(user)", user);
+        const checkRole = RoleService.findById(user.role_id);
         if (checkRole == null) {
             return null;
         }
+
         // const _user = new User(user.email, user.username, user.password, user.phoneNumber, user.role_id);
-        const fullUser = new UserWithBase(user);
+        let fullUser = new UserWithBase(user);
+        fullUser.password = await hashPassword(user.password);
+        console.log(fullUser.password);
         await mongoService.insertDocuments(collectionName, [fullUser]);
         return fullUser;
     } catch (error) {
@@ -36,10 +40,13 @@ async function changePasswordUser(userId, oldPassword, newPassword) {
         console.log("changePasswordUser");
         const userData = await getUserById(userId);
         if (!userData) {
+            console.log("userData false");
             return false;
         }
         // Tạo một thể hiện mới của User class
-        let user = new User(userData.email, userData.username, userData.password, userData.phoneNumber, userData.role_id);
+        let user = new UserWithBase(userData);
+        console.log("changePasswordUser userData",userData);
+        console.log("changePasswordUser user",user);
 
         // Đảm bảo bạn đang chờ hashPassword trả về
         const isValid = await user.isCorrectPassword(oldPassword);

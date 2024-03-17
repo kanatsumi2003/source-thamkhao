@@ -5,7 +5,7 @@ const { authenticateToken,authorizationMiddleware } = require('../../middleware/
 
 // Tạo role mới
 // router.post('/', authenticateToken,authorizationMiddleware, roleController.createRole);
-router.post('/',roleController.createRole);
+router.post('/',authenticateToken,authorizationMiddleware(["Admin"]),roleController.createRole);
 // router.put('/', authenticateToken, roleController.updateRole);
 // router.get('/', authenticateToken, roleController.getRoles);
 

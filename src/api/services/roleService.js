@@ -5,7 +5,7 @@ const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); 
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const { getUserById } = require('./userService');
-const collectionName = 'userrole';
+const collectionName = 'userroles';
 // Function to create a new role
 async function createRole(role) {
     const newRole = new Role(
@@ -27,7 +27,7 @@ async function updateRole(roleId, updateData) {
     }
     updateData.updateTime  = new Date();
     const query = { _id:  new mongoose.Types.ObjectId(roleId), isDelete: false, isActive: true };
-    const result = await mongoService.updateDocument(collectionName, query, { $set: updateData });
+    const result = await mongoService.updateDocument(collectionName, query, updateData);
     return result;
 }
 
@@ -43,12 +43,17 @@ async function deleteRole(roleId) {
     return result;
 }
 async function findById(roleId) {
+    console.log("mongoose.Types.ObjectId.isValid(roleId) ",mongoose.Types.ObjectId.isValid(roleId));
     // Kiểm tra nếu role_id không phải là ObjectId hợp lệ
     if (!mongoose.Types.ObjectId.isValid(roleId)) {
         roleId = new mongoose.Types.ObjectId(roleId);
     }
+    console.log("findById(roleId) ",roleId);
     const query = { _id: roleId, isDelete: false, isActive: true };
+    console.log("findById(roleId)query ",query);
+
     const roles = await mongoService.findDocuments(collectionName, query);
+    console.log("findById(roleId) ",roles);
     return roles[0];
 }
 
