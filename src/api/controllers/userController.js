@@ -1,32 +1,36 @@
 const { User, UserWithBase } = require('../../models/userModel');
 const mongoService = require('../services/mongoService');
 const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
+const { encodejwt, decodejwt } = require('../../utils/jwtutils'); // Đảm bảo đường dẫn đúng
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
+const { use } = require('../routes/userRoutes');
 const collectionName = 'users';
 
 async function createUser(req, res) {
     try {
-        const user = new User(req.body.email, req.body.username, req.body.password, req.body.phoneNumber);
+        let role_id = req.body.role_Id;
+        if (!role_id) {
+            return res.status(400).json({ message: "Vui lòng cung cấp role_id" });
+        }
+        console.log(req.body);
+        const user = new User(req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role_id);
+        console.log(user);
+
         const existUser = await mongoService.findDocuments(collectionName, {
             $or: [
-                { email: email },
-                { username: username }
+                { email: user.email },
+                { username: user.username }
             ]
         });
-        if (existUser.length >= 0 || existUser != null) {
+        if (existUser && existUser.length > 0) {
             return res.status(401).json({ message: "Email/Username đã tồn tại" });
         }
-        // Băm mật khẩu sử dụng utility
         user.password = await hashPassword(user.password);
-
         const userWithBase = new UserWithBase(user);
         const result = await mongoService.insertDocuments(collectionName, [userWithBase]);
-
-        // Loại bỏ trường mật khẩu trước khi gửi phản hồi
         const userData = { ...userWithBase };
         delete userData.password;
-
         res.status(201).json({ message: 'User created', data: userData });
     } catch (error) {
         res.status(500).json({ message: 'Error creating user', error });
@@ -50,11 +54,13 @@ async function login(req, res) {
         }
         console.log(user);
         // Tạo token JWT
-        const token = jwt.sign(
-            { userId: user._id },
-            process.env.REACT_APP_JWT_SECRET,
-            { expiresIn: '1h' }
-        );
+        // const token = jwt.sign(
+        //     { userId: user._id,
+        //     roleId: user.role_id },
+        //     process.env.REACT_APP_JWT_SECRET,
+        //     { expiresIn: '1h' }
+        // );
+        const token = encodejwt(user);
 
         // Gửi token cho client
         res.json({ token });

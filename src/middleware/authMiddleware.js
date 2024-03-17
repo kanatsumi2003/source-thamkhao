@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-
+const mongoService = require('../api/services/mongoService');
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -14,4 +14,19 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
-module.exports = { authenticateToken};
+async function authorizationMiddleware(req, res, next) {
+    const jwtuser = req.user;
+    try {
+        const roles = await mongoService.findDocuments(collectionName, { _id: new ObjectId(jwtuser.role_id) });
+        const role = roles[0] || null;
+
+        if (role == null || !role.isAdmin) {
+            return res.status(403).json({ message: "Không có quyền thực hiện hành động này" });
+        }
+
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+}
+module.exports = { authenticateToken,authorizationMiddleware};
