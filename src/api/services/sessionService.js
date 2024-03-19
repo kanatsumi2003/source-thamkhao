@@ -39,7 +39,12 @@ async function deleteSession(sessionId) {
     const result = await mongoService.deleteDocument(collectionName, query);;
     return result;
 }
-
+// Function to delete a session
+async function deleteSessionByJWTToken(JWTToken) {
+    const query = {jwttoken:JWTToken}
+    const result = await mongoService.deleteDocument(collectionName, query);;
+    return result;
+}
 async function findById(sessionId) {
     if (!mongoose.Types.ObjectId.isValid(sessionId)) {
         sessionId = new mongoose.Types.ObjectId(sessionId);
@@ -73,6 +78,7 @@ module.exports = {
     deleteSession,
     findById,
     findSessionByToken,
-    findSessionByEmailAndIP
+    findSessionByEmailAndIP,
+    deleteSessionByJWTToken
     // Add more exported functions as needed
 };
