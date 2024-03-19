@@ -5,8 +5,12 @@ const { authenticateToken } = require('../../middleware/authMiddleware'); // Đ�
 
 // Tạo người dùng mới
 router.post('/', userController.createUser);
+router.get('/sendmaildemo', userController.sendmaildemo);
 router.post('/login', userController.login);
+router.post('/verifyEmail', userController.verifyEmailRegister);
+router.post('/sendVerifyEmail', userController.sendVerifyEmail);
 router.post('/change-password', authenticateToken, userController.changePassword);
+router.post('/update-password', authenticateToken, userController.updatePasswordForgot);
 
 // Thêm các route cho updateUser, deleteUser, getUser, getUsers
 
