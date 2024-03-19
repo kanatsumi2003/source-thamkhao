@@ -8,7 +8,7 @@ async function encodejwt(user) {
             userId: user._id,
             email: user.email,
             roleId: user.role_id,
-            isAdmin:user.isAdmin
+            isAdmin: user.isAdmin
         },
         process.env.REACT_APP_JWT_SECRET,
         { expiresIn: process.env.REACT_APP_EXPIRE_TOKEN }
@@ -19,7 +19,7 @@ async function encodejwt(user) {
             userId: user._id,
             email: user.email,
             roleId: user.role_id,
-            isAdmin:user.isAdmin
+            isAdmin: user.isAdmin
         },
         process.env.REACT_APP_REFRESH_TOKEN_SECRET,
         { expiresIn: process.env.REACT_APP_EXPIRE_REFRESH_TOKEN }
@@ -70,8 +70,46 @@ function addDuration(duration) {
     // Định dạng và trả về ngày giờ mới dưới dạng chuỗi
     return newDateTime.format('YYYY-MM-DD HH:mm:ss');
 }
+
+async function createJwtAndSession(user, email, ipAddress, deviceId) {
+    const {token, refreshToken, expiresIn} = await encodejwt(user); // Assuming encodeJwt generates a token and handles the setting of expiration
+
+    const sessionExist = await findSessionByEmailAndIP(email, ipAddress, deviceId); // kiểm tra có login nào  trong cùng device và ip ko
+
+    if (sessionExist != null && sessionExist.length >= 0) {
+        for (const sess of sessionExist) {
+            await deleteSession(sess._id); // Assuming each session document has an _id field
+        }
+    }
+    // Assuming encodeJwt returns an object with the token and its expiry
+
+    const tokenExpiryDate = addDuration(token.expiresIn);
+    const refreshTokenExpiryDate = addDuration(process.env.REACT_APP_EXPIRE_REFRESH_TOKEN);
+
+    // Save the session in sessionModel
+    var session = await createSession({
+        userId: user._id,
+        email: user.email,
+        name: user.name || "unknown", // Assuming user object has a name field
+        username: user.username.toLowerCase(), // Assuming user object has a username field
+        jwttoken: token.token, // Assuming the token object has a token field
+        refreshToken: token.refreshToken,
+        ExpireRefreshToken: refreshTokenExpiryDate,
+        expireDate: tokenExpiryDate,
+        deviceId: deviceId,
+        ipAddress: ipAddress
+    });
+
+    return {
+        token,
+        refreshToken,
+        expiresIn, // Thời gian hết hạn của access token
+        session // session mới được tạo
+    };
+}
 module.exports = {
     encodejwt,
     decodejwt,
-    addDuration
+    addDuration,
+    createJwtAndSession
 };
