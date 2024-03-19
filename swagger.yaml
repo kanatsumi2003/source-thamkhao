@@ -49,6 +49,40 @@ paths:
           description: User created
         '400':
           description: Invalid input
+  /api/users/update-password:
+    post:
+      summary: Update user password
+      tags:
+        - Users
+      description: This endpoint allows a user to update their password after successful email verification.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: passwordUpdate
+          description: The new password for the user
+          required: true
+          schema:
+            type: object
+            properties:
+              newpassword:
+                type: string
+                description: The new password for the user account.
+      responses:
+        '200':
+          description: Password updated successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "xác thực mail thành công"
+        '400':
+          description: Invalid input
+        '401':
+          description: Unauthorized, token missing or invalid
   /api/users/login:
     post:
       summary: Authenticate user and return JWT
@@ -130,7 +164,51 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-
+  /api/users/sendmaildemo:
+    post:
+      summary: Send a verification email to the user
+      tags:
+        - Users
+      description: Sends a verification email to the user specified by the email in the request body.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Email of the user to send the verification email to
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+      responses:
+        '200':
+          description: Verification email sent successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '401':
+          description: Email not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '500':
+          description: Error sending email
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
   /api/roles:
     post:
       summary: Create a new role

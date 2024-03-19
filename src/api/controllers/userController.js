@@ -3,6 +3,7 @@ const userService = require('../services/userService');
 const { createSession, deleteSession, findSessionByToken, findSessionByEmailAndIP } = require('../services/sessionService'); // Assuming this is the correct path to your session service
 const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 const { encodejwt, addDuration } = require('../../utils/jwtutils'); // Đảm bảo đường dẫn đúng
+const { sendMail } = require('../../utils/emailUtil'); // Đảm bảo đường dẫn đúng
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const { use } = require('../routes/userRoutes');
@@ -16,7 +17,7 @@ async function createUser(req, res) {
             return res.status(400).json({ message: "Vui lòng cung cấp role_id" });
         }
         console.log(req.body);
-        const user = new User(req.body.fullname,req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role_id);
+        const user = new User(req.body.fullname, req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role_id);
         console.log(user);
 
         const existUser = await userService.getUserByEmailAndUsername(user.email, user.username);
@@ -156,4 +157,55 @@ async function logoutSessions(userId, req) {
         }
     }
 }
-module.exports = { createUser, login, changePassword, logout };
+async function sendmaildemo(req, res) {
+    console.log("sendmaildemo");
+    const { email } = req.body;
+
+    // Use userService to find user by email
+    const user = await userService.getUserByEmail(email);
+    if (!user) {
+        return res.status(401).json({ message: "Email không tồn tại" });
+    }
+    console.log(user);
+    await sendMail("truonglongkt12@gmail.com", "hello  world", user, "verifyEmailTemplate.ejs");
+    res.status(200).json({ message: "gửi mail thành công" });
+
+}
+async function verifyEmailRegister(req, res) {
+    const { EmailCode,email } = req.body;
+    //active
+    res.status(200).json({ message: "xác thực mail thành công" });
+
+}
+async function verifyForgotPasswordByEmailCode(req, res) {
+    const { EmailCode,email , newpassword} = req.body;
+    res.status(200).json({ message: "xác thực mail thành công" });
+}
+async function sendVerifyEmail(req, res) {
+    res.status(200).json({ message: "xác thực mail thành công" });
+
+}
+async function updatePasswordForgot(req, res) {
+    const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
+    const { newpassword} = req.body;
+    res.status(200).json({ message: "xác thực mail thành công" });
+
+}
+async function forgotPassword(req, res) {
+    //lay email kiem tra ton tai user
+    //doi emailcode lai thanh 1 ma~
+    //send email ma code do
+    res.status(200).json({ message: "aaa" });
+}
+module.exports = {
+    createUser,
+    login,
+    changePassword,
+    logout,
+    sendmaildemo,
+    verifyEmailRegister,
+    sendVerifyEmail,
+    forgotPassword,
+    verifyForgotPasswordByEmailCode,
+    updatePasswordForgot
+};

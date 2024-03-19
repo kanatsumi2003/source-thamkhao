@@ -2,7 +2,7 @@ const mongoose = require('mongoose'); // Import module mongoose
 const BaseModel = require('./baseModel');
 const { hashPassword, comparePassword } = require('../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 const bcrypt = require('bcryptjs');
-
+const speakeasy = require('speakeasy');
 class User {
     constructor(FullName, email, username, password, phoneNumber,role_id) {
         this.FullName=FullName;
@@ -12,8 +12,9 @@ class User {
         this.phoneNumber = phoneNumber;
         this.emailConfirmed = false;
         this.phoneConfirmed = false;
-        console.log("UserModel ");
-        console.log(role_id);
+        this.emailCode =  Math.random().toString(36).substr(2,5);//Mã xác minh tài khoản của user nếu  chưa được xác 
+        this.enable2FA = false;
+        this.twoFASecret = speakeasy.generateSecret({length: 20}).base32;
         // Kiểm tra nếu role_id không phải là ObjectId hợp lệ
         if (!mongoose.Types.ObjectId.isValid(role_id)) {
             this.role_id = new mongoose.Types.ObjectId(role_id); // Chuyển đổi role_Id thành ObjectId

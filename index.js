@@ -1,4 +1,5 @@
 const express = require('express');
+
 const userRoutes = require('./src/api/routes/userRoutes.js');
 const roleRoutes = require('./src/api/routes/roleRoutes.js');
 const swaggerUi = require('swagger-ui-express');
@@ -10,6 +11,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 const app = express();
 
 app.use(express.json());
+
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
