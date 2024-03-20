@@ -344,45 +344,18 @@ paths:
         "200":
           description: Successful operation
           schema:
-          type: array
-          items:
-            $ref: "#/definitions/Company"
-      "500":
-        description: Error getting companies
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-            error:
-              type: string
-  /companies/{id}:
-    get:
-      summary: Get a company by ID
-      tags:
-        - Company
-      produces:
-        - application/json
-      parameters:
-        - name: id
-         in: path
-        required: true
-        description: ID of the company to retrieve
-        type: string
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: "#/definitions/Company"
+            type: array
+            items:
+              $ref: "#/definitions/Company"
         "500":
-          description: Error getting company
+          description: Error getting companies
           schema:
-          type: object
-          properties:
-            message:
-              type: string
-            error:
-              type: string
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
     put:
       summary: Update a company
       tags:
@@ -392,11 +365,6 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the company to update
-          type: string
         - in: body
           name: company
           description: Updated company data
@@ -410,34 +378,61 @@ paths:
         "500":
           description: Error updating company
           schema:
-          type: object
-          properties:
-            message:
-              type: string
-            error:
-              type: string
-  delete:
-    summary: Delete a company
-    tags:
-      - Company
-    parameters:
-      - name: id
-        in: path
-        required: true
-        description: ID of the company to delete
-        type: string
-    responses:
-      "200":
-        description: Company deleted
-      "500":
-        description: Error deleting company
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-            error:
-              type: string
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
+    delete:
+      summary: Delete a company
+      tags:
+        - Company
+      parameters:
+        - in: body
+          name: id
+          description: ID of the company to delete
+          schema:
+            $ref: "#/definitions/CompanyDelete"
+      responses:
+        "200":
+          description: Company deleted
+        "500":
+          description: Error deleting company
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
+  /companies/{id}:
+    get:
+      summary: Get a company by ID
+      tags:
+        - Company
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company to retrieve
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: "#/definitions/Company"
+        "500":
+          description: Error getting company
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -483,6 +478,8 @@ definitions:
   Company:
     type: object
     properties:
+      id:
+        type: string
       companyName:
         type: string
       address:
@@ -506,4 +503,9 @@ definitions:
       imageCompany:
         type: string
       startDateSubs:
+        type: string
+  CompanyDelete:
+    type: object
+    properties:
+      id:
         type: string
