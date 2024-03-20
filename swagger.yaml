@@ -268,7 +268,72 @@ paths:
           description: Unauthorized
         '500':
           description: Internal server error    
-
+  /companies:
+    post:
+      summary: Create a new company
+      tags:
+        - Company
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: company
+          description: The company data to create
+          schema:
+            type: object
+            properties:
+              companyName:
+                type: string
+              address:
+                type: string
+              phoneNumber:
+                type: string
+              userNameAdmin:
+                type: string
+              passwordAdmin:
+                type: string
+              subscriptionId:
+                type: string
+              userId:
+                type: string
+              emailCompany:
+                type: string
+              taxCompany:
+                type: string
+              countryCode:
+                type: string
+              imageCompany:
+                type: string
+              startDateSubs:
+                type: string
+      responses:
+        '201':
+          description: Company created
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                $ref: '#/definitions/Company'
+        '400':
+          description: Invalid input
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        '500':
+          description: Error creating company
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -311,3 +376,30 @@ definitions:
         type: boolean
       listClaim:
         type: array
+  Company:
+    type: object
+    properties:
+        companyName:
+            type: string
+        address:
+            type: string
+        phoneNumber:
+            type: string
+        userNameAdmin:
+            type: string
+        passwordAdmin:
+            type: string
+        subscriptionId:
+            type: string
+        userId:
+            type: string
+        emailCompany:
+            type: string
+        taxCompany:
+            type: string
+        countryCode:
+            type: string
+        imageCompany:
+            type: string
+        startDateSubs:
+            type: string

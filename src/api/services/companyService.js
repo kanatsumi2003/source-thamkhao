@@ -1,6 +1,6 @@
-import {CompanyProfile, CompanyProfileWithBase} from '../../models/profileCompanyModel';
-import mongoService from '../services/mongoService';
-import {hashPassword} from "../../utils/passwordUtils";
+const {CompanyProfile, CompanyProfileWithBase} = require('../../models/profileCompanyModel');
+const mongoService = require('../services/mongoService');
+const {hashPassword} = require("../../utils/passwordUtils");
 
 const mongoose= require('mongoose'); // Import module mongoose
 
