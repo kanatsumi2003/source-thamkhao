@@ -7,6 +7,25 @@ const mongoose= require('mongoose'); // Import module mongoose
 const collectionName = 'companies';
 
 /**
+ * Check the Company Name is exist or not
+ * @param {string} companyName The name of the company to check for existence
+ * @returns {boolean} true if the company name exists, false otherwise
+ * @exception Error Create connect to db fail
+ */
+async function isCompanyNameExist(companyName) {
+    try {
+        const query = { companyName: companyName, isDelete: false, isActive: true };
+        const companies = await mongoService.findDocuments(collectionName, query);
+
+        //True if the company exist
+        return companies !== null && companies.length > 0;
+
+    } catch (error) {
+        throw new Error('Error checking company name: ' + error.message);
+    }
+}
+
+/**
  * Create a new company
  * @param {CompanyProfile} company The company to create
  * @returns {CompanyProfileWithBase || null || undefined} The company has been created
@@ -17,10 +36,12 @@ const collectionName = 'companies';
 async function createCompany(company) {
     try {
         console.log('CreateCompany(company)', company);
-        let isCompanyNameExist = await isCompanyNameExist(company.companyName);
+        let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
+
         if (isCompanyNameExist) {
             return null;
         }
+
         let fullCompany = new CompanyProfileWithBase(company);
         fullCompany.passwordAdmin = await hashPassword(company.passwordAdmin);
         console.log(fullCompany.passwordAdmin);
@@ -48,26 +69,8 @@ async function getAllCompanies() {
 
 }
 
-/**
- * Check the Company Name is exist or not
- * @param {string} companyName The name of the company to check for existence
- * @returns {boolean} true if the company name exists, false otherwise
- * @exception Error Create connect to db fail
- */
-async function isCompanyNameExist(companyName) {
-    try {
-        const query = { companyName: companyName, isDelete: false, isActive: true };
-        const companies = await mongoService.findDocuments(collectionName, query);
-
-        //True if the company exist
-        return companies !== null && companies.length > 0;
-
-    } catch (error) {
-        throw new Error('Error checking company name: ' + error.message);
-    }
-}
-
 module.exports = {
     createCompany,
-    getAllCompanies
+    getAllCompanies,
+    isCompanyNameExist
 };

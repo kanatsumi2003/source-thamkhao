@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
+const {createSession, deleteSession, findSessionByEmailAndIP} = require("../api/services/sessionService");
 
 async function encodejwt(user) {
     // Tạo token JWT
@@ -87,7 +88,7 @@ async function createJwtAndSession(user, email, ipAddress, deviceId) {
     const refreshTokenExpiryDate = addDuration(process.env.REACT_APP_EXPIRE_REFRESH_TOKEN);
 
     // Save the session in sessionModel
-    var session = await createSession({
+    const session = await createSession({
         userId: user._id,
         email: user.email,
         name: user.name || "unknown", // Assuming user object has a name field
