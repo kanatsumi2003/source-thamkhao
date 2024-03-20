@@ -5,7 +5,7 @@ const { authenticateToken } = require('../../middleware/authMiddleware'); // Đ�
 
 // Tạo người dùng mới
 router.post('/', userController.createUser);
-router.get('/sendmaildemo', userController.sendmaildemo);
+router.post('/sendmaildemo', userController.sendmaildemo);
 router.post('/login', userController.login);
 router.post('/verifyEmail', userController.verifyEmailRegister);
 router.post('/sendVerifyEmail', userController.sendVerifyEmail);

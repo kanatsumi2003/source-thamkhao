@@ -38,6 +38,7 @@ class CompanyProfile {
         this.totalInvoices = 0; // Storing the total number of invoices
         this.totalProducts = 0; // Storing the total number of products
         this.totalStorageUse = 0; // Storing the total storage used
+        this.apiKey = null; // API Key for third-party services (odoo)
     }
 }
 

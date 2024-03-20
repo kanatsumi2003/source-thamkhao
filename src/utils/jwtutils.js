@@ -26,7 +26,8 @@ async function encodejwt(user) {
     );
     // Log tokens for debugging
     console.log('Access Token:', token);
-    console.log('Refresh Token:', refreshToken);
+    console.log('Access Token:', token);
+    console.log('process.env.REACT_APP_JWT_SECRET:', process.env.REACT_APP_JWT_SECRET);
     return {
         token,
         refreshToken,
