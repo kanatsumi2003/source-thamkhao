@@ -91,7 +91,7 @@ async function createJwtAndSession(user, email, ipAddress, deviceId) {
     const session = await createSession({
         userId: user._id,
         email: user.email,
-        name: user.name || "unknown", // Assuming user object has a name field
+        name: user.FullName || "unknown", // Assuming user object has a name field
         username: user.username.toLowerCase(), // Assuming user object has a username field
         jwttoken: token.token, // Assuming the token object has a token field
         refreshToken: token.refreshToken,
