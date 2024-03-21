@@ -2,6 +2,11 @@ const { default: axios } = require('axios');
 const mongoService = require('./mongoService');
 const { Dns, DnsWithBase } = require('../../models/dnsModel');
 require('dotenv').config();
+//token lay tu env
+//them api de update token
+//dnsModel la info ve dns
+//dnsRecordModel la cac info ve subdomain
+//tim hieu tags locked, meta
 
 async function getAllDnsRecords(url, zone_id, authorization_token) {
     try {
@@ -23,7 +28,7 @@ async function createDnsRecord(url, zone_id, authorization_token, dnsData) {
     try {
         const postData = {
             type: dnsData.type,
-            name: dnsData.name,
+            name: dnsData.name, //nho comment
             content: dnsData.content
         }
         const response = await axios.post(`${url}/zones/${zone_id}/dns_records`, postData, {
@@ -33,23 +38,7 @@ async function createDnsRecord(url, zone_id, authorization_token, dnsData) {
             }
         })
         const result = response.data.result;
-        // const dns = new Dns(
-        //     result.id,
-        //     result.zone_id,
-        //     result.zone_name,
-        //     result.name,
-        //     result.type,
-        //     result.content,
-        //     result.proxiable,
-        //     result.proxied,
-        //     result.ttl,
-        //     result.locked,
-        //     result.meta,
-        //     result.comment,
-        //     result.tags,
-        //     result.created_on,
-        //     result.modified_on,
-        // )
+        
         const dns = new Dns(result);
         console.log(dns)
         return dns;

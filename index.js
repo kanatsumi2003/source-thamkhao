@@ -2,6 +2,7 @@ const express = require('express');
 
 const userRoutes = require('./src/api/routes/userRoutes.js');
 const roleRoutes = require('./src/api/routes/roleRoutes.js');
+const dnsRoutes = require('./src/api/routes/dnsRoutes.js');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
+app.use('/api/dns', dnsRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = process.env.REACT_APP_PORT || 3001;
