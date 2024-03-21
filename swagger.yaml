@@ -268,145 +268,6 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
-  /companies:
-    post:
-      summary: Create a new company
-      tags:
-        - Company
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: company
-          description: The company data to create
-          schema:
-            type: object
-            properties:
-              companyName:
-                type: string
-              address:
-                type: string
-              phoneNumber:
-                type: string
-              userNameAdmin:
-                type: string
-              passwordAdmin:
-                type: string
-              subscriptionId:
-                type: string
-              userId:
-                type: string
-              emailCompany:
-                type: string
-              taxCompany:
-                type: string
-              countryCode:
-                type: string
-              imageCompany:
-                type: string
-              startDateSubs:
-                type: string
-      responses:
-        "201":
-          description: Company created
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              data:
-                $ref: "#/definitions/Company"
-        "400":
-          description: Invalid input
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-        "500":
-          description: Error creating company
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              error:
-                type: string
-    get:
-      summary: Get all companies
-      tags:
-        - Company
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Company"
-        "500":
-          description: Error getting companies
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              error:
-                type: string
-    put:
-      summary: Update a company
-      tags:
-        - Company
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: company
-          description: Updated company data
-          schema:
-            $ref: "#/definitions/Company"
-      responses:
-        "200":
-          description: Company updated
-          schema:
-            $ref: "#/definitions/Company"
-        "500":
-          description: Error updating company
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              error:
-                type: string
-    delete:
-      summary: Delete a company
-      tags:
-        - Company
-      parameters:
-        - in: body
-          name: id
-          description: ID of the company to delete
-          schema:
-            $ref: "#/definitions/CompanyDelete"
-      responses:
-        "200":
-          description: Company deleted
-        "500":
-          description: Error deleting company
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-              error:
-                type: string
-  /companies/{id}:
     get:
       summary: Get a company by ID
       tags:
@@ -433,6 +294,201 @@ paths:
                 type: string
               error:
                 type: string
+  /api/companies:
+    post:
+      summary: Create a new company
+      tags:
+        - Companies
+      description: This endpoint allows authenticated users to create a new company.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: body
+          name: companyDetails
+          description: Company details
+          required: true
+          schema:
+            type: object
+            required:
+              - companyName
+              - address
+              - phoneNumber
+              - userNameAdmin
+              - passwordAdmin
+              - emailCompany
+              - taxCompany
+              - countryCode
+            properties:
+              companyName:
+                type: string
+              address:
+                type: string
+              phoneNumber:
+                type: string
+              userNameAdmin:
+                type: string
+              passwordAdmin:
+                type: string
+              subscriptionId:
+                type: string
+              userId:
+                type: string
+              emailCompany:
+                type: string
+              taxCompany:
+                type: string
+              countryCode:
+                type: string
+              imageCompany:
+                type: string
+              startDateSubs:
+                type: string
+                format: date-time
+      responses:
+        "201":
+          description: Company created successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: object
+                # Specify the company data structure here
+        "400":
+          description: Company already exists or invalid input data
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+    get:
+      summary: Get all companies
+      tags:
+        - Companies
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+      responses:
+        "200":
+          description: Company data retrieved successfully
+          schema:
+            type: object
+            # Specify the company data structure here
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+  /api/companies/{id}:
+    get:
+      summary: Get a company by its ID
+      tags:
+        - Companies
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company
+      responses:
+        "200":
+          description: Company data retrieved successfully
+          schema:
+            type: object
+            # Specify the company data structure here
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+    put:
+      summary: Update a company
+      tags:
+        - Companies
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company to update
+        - in: body
+          name: companyDetails
+          description: Company details to update
+          schema:
+            type: object
+            # Specify the company properties that can be updated
+      responses:
+        "200":
+          description: Company updated successfully
+        "400":
+          description: Invalid input data
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Delete a company
+      tags:
+        - Companies
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company to delete
+      responses:
+        "200":
+          description: Company deleted successfully
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
 securityDefinitions:
   Bearer:
     type: apiKey

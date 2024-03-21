@@ -1,7 +1,5 @@
 const {
-  CompanyProfile,
-  CompanyProfileWithBase,
-} = require("../../models/profileCompanyModel");
+  CompanyProfile,CompanyProfileWithBase,} = require("../../models/profileCompanyModel");
 const companyService = require("../services/companyService");
 
 async function createCompany(req, res) {
@@ -28,10 +26,11 @@ async function createCompany(req, res) {
       req.body.startDateSubs, // start date may be null
       0,
       0,
-      0
+      0,
+      "aaa"
     );
-
-    const result = await companyService.createCompany(company);
+    const fullcompany = new CompanyProfileWithBase(company);// phải tạo model with base model để create
+    const result = await companyService.createCompany(fullcompany);
 
     if (result === null)
       res
