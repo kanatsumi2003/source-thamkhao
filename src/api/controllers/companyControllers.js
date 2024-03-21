@@ -1,8 +1,10 @@
 const {
-  CompanyProfile,CompanyProfileWithBase,} = require("../../models/profileCompanyModel");
+  CompanyProfile, CompanyProfileWithBase, } = require("../../models/profileCompanyModel");
 const companyService = require("../services/companyService");
 
 async function createCompany(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["Companies"]
   try {
     console.log(res.body);
     const companyNameDomain = req.body.companyName
@@ -47,6 +49,8 @@ async function createCompany(req, res) {
 }
 
 async function getAllCompanies(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["Companies"]
   try {
     const companies = await companyService.getAllCompanies();
     res.status(200).json(companies);
@@ -56,6 +60,8 @@ async function getAllCompanies(req, res) {
 }
 
 async function getCompanyById(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["Companies"]
   try {
     const company = await companyService.getCompanyById(req.id);
     res.status(200).json(company);
@@ -65,6 +71,8 @@ async function getCompanyById(req, res) {
 }
 
 async function updateCompany(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["Companies"]
   try {
     const company = await companyService.updateCompany(req.body);
     res.status(200).json(company);
@@ -74,6 +82,8 @@ async function updateCompany(req, res) {
 }
 
 async function deleteCompany(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["Companies"]
   try {
     const company = await companyService.deleteCompany(req.id);
     res.status(200).json(company);

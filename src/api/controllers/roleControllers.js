@@ -9,6 +9,8 @@ const collectionRoleName = 'userroles';
 const collectionUserName = 'users';
 
 async function createRole(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Roles"]
     try {
         const { Name, Description, isAdmin, listClaim } = req.body;
         console.log(Name);

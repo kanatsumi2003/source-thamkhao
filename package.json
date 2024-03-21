@@ -24,6 +24,8 @@
     "nodemailer": "^6.9.12",
     "qrcode": "^1.5.3",
     "speakeasy": "^2.0.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "yamljs": "^0.3.0"
   },
