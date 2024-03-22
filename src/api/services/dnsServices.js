@@ -1,117 +1,137 @@
-const { default: axios } = require('axios');
-const mongoService = require('./mongoService');
-const { Dns, DnsWithBase } = require('../../models/dnsModel');
-require('dotenv').config();
-//token lay tu env
-//them api de update token
-//dnsModel la info ve dns
-//dnsRecordModel la cac info ve subdomain
-//tim hieu tags locked, meta
+const { default: axios } = require("axios");
+const mongoService = require("./mongoService");
+const { DnsRecord, DnsRecordWithBase } = require("../../models/dnsRecordModel");
+const axiosUtil = require("../../utils/axiosUtil");
 
-async function getAllDnsRecords(url, zone_id, authorization_token) {
-    try {
-        const response = await axios.get(`${url}/zones/${zone_id}/dns_records`, {
-            headers: {
-                'Authorization': `Bearer ${authorization_token}`,
-                'Content-Type': 'application/json',
-            }
-        });
-        const result = response.data.result
-        console.log(result.map(data => new Dns(data)));
-        return await result.map(data => new Dns(data));
-    } catch (error) {
-        console.log(error.message);
-    }
+require("dotenv").config();
+
+const CLOUD_FLARE_API = process.env.CLOUD_FLARE_API;
+const DNS_RECORD_URL = `${CLOUD_FLARE_API}/zones`;
+const CLOUD_FLARE_AUTH_TOKEN = process.env.TOKEN; //Token header
+
+async function getAllDnsRecords(zone_id) {
+  const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
+  const headers = {
+    Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+  const data = await axiosUtil
+    .axiosGet(url, headers)
+    .then((response) => {
+      const result = response.data.result;
+      console.log(result.map((data) => new DnsRecord(data))); //Return ra giá trị dựa theo dnsRecordModel
+      return result.map((data) => new DnsRecord(data));
+    })
+    .catch((error) => {
+      return {
+        error: error.response.data.errors, //có lỗi sẽ return ra message + statusCode
+        statusCode: error.response.status,
+      };
+    });
+  return data;
 }
 
-async function createDnsRecord(url, zone_id, authorization_token, dnsData) {
-    try {
-        const postData = {
-            type: dnsData.type,
-            name: dnsData.name, //nho comment
-            content: dnsData.content
-        }
-        const response = await axios.post(`${url}/zones/${zone_id}/dns_records`, postData, {
-            headers: {
-                'Authorization': `Bearer ${authorization_token}`,
-                'Content-Type': 'application/json',
-            }
-        })
-        const result = response.data.result;
-        
-        const dns = new Dns(result);
-        console.log(dns)
-        return dns;
-    } catch (error) {
-        throw new Error('Error: ' + error.message);
-    }
+async function createDnsRecord(zone_id, postData) {
+  const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
+  const headers = {
+    Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+  const _postData = {
+    type: postData.type, //A, Cname, TXT
+    name: postData.name, //subdomain.domainname.com
+    content: postData.content, //ipv4 address (A), domainname (Cname)
+  };
+  const data = await axiosUtil
+    .axiosPost(url, _postData, headers)
+    .then((response) => {
+      const result = response.data.result;
+      const dns = new DnsRecord(result); //Return ra giá trị dựa theo dnsRecordModel
+      console.log(dns);
+      return dns;
+    })
+    .catch((error) => {
+      return {
+        error: error.response.data.errors, //có lỗi sẽ return ra message + statusCode
+        statusCode: error.response.status,
+      };
+    });
+  return data;
 }
 
-async function findDnsRecordByName(url, zone_id, authorization_token, searchValue) {
-    try {
-        const response = await axios.get(`${url}/zones/${zone_id}/dns_records`, {
-            headers: {
-                'Authorization': `Bearer ${authorization_token}`,
-                'Content-Type': 'application/json',
-            },
-            params: {
-                name: searchValue
-            }
-        })
-
-        const result = response.data.result;
-        if (result == (0)) {
-            throw new Error('Record not found')
-        }
-
-        console.log(result.map(data => new Dns(data)));
-        return await result.map(data => new Dns(data));
-    } catch (error) {
-        console.log(error.message)
-    }
+async function findDnsRecordByName(zone_id, searchValue) {
+  const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
+  const headers = {
+    Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+  const params = {
+    name: searchValue,
+  };
+  const data = await axiosUtil
+    .axiosSearch(url, params, headers)
+    .then((response) => {
+      const result = response.data.result;
+      console.log(result.map((data) => new DnsRecord(data))); //Return ra giá trị dựa theo dnsRecordModel
+      return result.map((data) => new DnsRecord(data));
+    })
+    .catch((error) => {
+      return {
+        error: error.response.data.errors, //có lỗi sẽ return ra message + statusCode
+        statusCode: error.response.status,
+      };
+    });
+  return data;
 }
 
-async function deleteDnsRecord(url, zone_id, authorization_token, dnsID) {
-    try {
-        const response = await axios.delete(`${url}/zones/${zone_id}/dns_records/${dnsID}`, {
-            headers: {
-                'Authorization': `Bearer ${authorization_token}`,
-                'Content-Type': 'application/json',
-            }
-        })
-        const result = response.data.result;
-        if(result == null) throw new Error("Record not found");
-        const dns = new Dns(result);
+async function deleteDnsRecord(zone_id, recordID) {
+  const url = `${DNS_RECORD_URL}/${zone_id}/dns_records/${recordID}`; //cần đưa vào zone_id và recordID
+  const headers = {
+    Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+  const data = await axiosUtil
+    .axiosDelete(url, headers)
+    .then((response) => {
+      const result = response.data.result;
+      const dnsRecord = new DnsRecord(result); //Return ra giá trị dựa theo dnsRecordModel
+      console.log(dnsRecord);
+      return dnsRecord; //sau đó return về những giá trị != undefined
+    })
+    .catch((error) => {
+      return {
+        error: error.response.data.errors, //có lỗi sẽ return ra message + statusCode
+        statusCode: error.response.status,
+      };
+    });
+  return data;
+}
 
+async function updateDnsRecord(zone_id, recordID, updateData) {
+    const url = `${DNS_RECORD_URL}/${zone_id}/dns_records/${recordID}` //cần đưa vào zone_id và recordID
+    const headers = {
+        'Authorization': `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
+        'Content-Type': 'application/json',
+    }
+    const data = await axiosUtil.axiosPatch(url, updateData, headers)
+    .then(response => {
+        const result = response.data.result;
+        const dns = new DnsRecord(result); //Return ra giá trị dựa theo dnsRecordModel
         console.log(dns);
         return dns;
-    } catch (error) {
-        console.log(error.message)
-    }
+    }).catch(error => {
+        return {
+            error: error.response.data.errors,
+            statusCode: error.response.status
+        }
+    })
+    return data;
 }
 
-async function updateDnsRecord(url, zone_id, authorization_token, dnsID, updateData){
-    try {
-        const response = await axios.patch(`${url}/zones/${zone_id}/dns_records/${dnsID}`, updateData, {
-            headers: {
-                'Authorization': `Bearer ${authorization_token}`,
-                'Content-Type': 'application.json',
-            }
-        })
-        const result = response.data.result;
-        if(result == null) throw new Error("Record not found");
-        const dns = new Dns(result);
-
-        console.log(dns);
-        return dns;
-    } catch (error) {
-        console.log(error.message)
-    }
-}
 module.exports = {
-    getAllDnsRecords,
-    createDnsRecord,
-    findDnsRecordByName,
-    deleteDnsRecord,
-    updateDnsRecord,
-}
+  getAllDnsRecords,
+  createDnsRecord,
+  findDnsRecordByName,
+  deleteDnsRecord,
+  updateDnsRecord,
+};

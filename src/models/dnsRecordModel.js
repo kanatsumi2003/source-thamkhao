@@ -1,6 +1,6 @@
 const BaseModel = require("./baseModel");
 
-class Dns {
+class DnsRecord {
     // constructor(id, zone_id, zone_name, name, type, content, proxiable, proxied, ttl, locked, meta, comment, tags, created_on, modified_on) {
     //     this.id = id;
     //     this.zone_id = zone_id;
@@ -36,11 +36,11 @@ class Dns {
         this.modified_on = data.modified_on;
     }
 }
-class DnsWithBase extends BaseModel {
+class DnsRecordWithBase extends BaseModel {
     constructor(dns) {
         super();
         Object.assign(this, dns);
     }
 }
 
-module.exports = { Dns, DnsWithBase };
+module.exports = { DnsRecord, DnsRecordWithBase };
