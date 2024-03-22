@@ -1,6 +1,6 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: '1.0.0'
+  version: "1.0.0"
   title: User API
   description: API for managing users
 host: localhost:3000
@@ -13,7 +13,7 @@ paths:
       summary: Create a new user
       tags:
         - Users
-      description: ''
+      description: ""
       consumes:
         - application/json
       produces:
@@ -45,9 +45,9 @@ paths:
               role_Id:
                 type: string
       responses:
-        '201':
+        "201":
           description: User created
-        '400':
+        "400":
           description: Invalid input
   /api/users/update-password:
     post:
@@ -71,7 +71,7 @@ paths:
                 type: string
                 description: The new password for the user account.
       responses:
-        '200':
+        "200":
           description: Password updated successfully
           schema:
             type: object
@@ -79,9 +79,9 @@ paths:
               message:
                 type: string
                 example: "xác thực mail thành công"
-        '400':
+        "400":
           description: Invalid input
-        '401':
+        "401":
           description: Unauthorized, token missing or invalid
   /api/users/login:
     post:
@@ -111,7 +111,7 @@ paths:
               password:
                 type: string
       responses:
-        '200':
+        "200":
           description: Authentication successful, returns JWT
           schema:
             type: object
@@ -119,9 +119,9 @@ paths:
               token:
                 type: string
                 description: JWT for authenticated user
-        '401':
+        "401":
           description: Authentication failed due to invalid email or password
-        '500':
+        "500":
           description: Internal server error
   /api/users/change-password:
     post:
@@ -156,13 +156,13 @@ paths:
                 type: string
                 format: password
       responses:
-        '200':
+        "200":
           description: Password changed successfully
-        '401':
+        "401":
           description: Unauthorized or old password is incorrect
-        '404':
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Internal server error
   /api/users/sendmaildemo:
     post:
@@ -188,21 +188,21 @@ paths:
                 type: string
                 format: email
       responses:
-        '200':
+        "200":
           description: Verification email sent successfully
           schema:
             type: object
             properties:
               message:
                 type: string
-        '401':
+        "401":
           description: Email not found
           schema:
             type: object
             properties:
               message:
                 type: string
-        '500':
+        "500":
           description: Error sending email
           schema:
             type: object
@@ -248,7 +248,7 @@ paths:
                 items:
                   type: string
       responses:
-        '201':
+        "201":
           description: Role created successfully
           schema:
             type: object
@@ -256,19 +256,239 @@ paths:
               message:
                 type: string
               data:
-                $ref: '#/definitions/Role'
-        '400':
+                $ref: "#/definitions/Role"
+        "400":
           description: Role already exists or invalid input data
           schema:
             type: object
             properties:
               message:
                 type: string
-        '401':
+        "401":
           description: Unauthorized
-        '500':
-          description: Internal server error    
+        "500":
+          description: Internal server error
+    get:
+      summary: Get a company by ID
+      tags:
+        - Company
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the company to retrieve
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: "#/definitions/Company"
+        "500":
+          description: Error getting company
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              error:
+                type: string
+  /api/companies:
+    post:
+      summary: Create a new company
+      tags:
+        - Companies
+      description: This endpoint allows authenticated users to create a new company.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: body
+          name: companyDetails
+          description: Company details
+          required: true
+          schema:
+            type: object
+            required:
+              - companyName
+              - address
+              - phoneNumber
+              - userNameAdmin
+              - passwordAdmin
+              - emailCompany
+              - taxCompany
+              - countryCode
+            properties:
+              companyName:
+                type: string
+              address:
+                type: string
+              phoneNumber:
+                type: string
+              userNameAdmin:
+                type: string
+              passwordAdmin:
+                type: string
+              subscriptionId:
+                type: string
+              userId:
+                type: string
+              emailCompany:
+                type: string
+              taxCompany:
+                type: string
+              countryCode:
+                type: string
+              imageCompany:
+                type: string
+              startDateSubs:
+                type: string
+                format: date-time
+      responses:
+        "201":
+          description: Company created successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                type: object
+                # Specify the company data structure here
+        "400":
+          description: Company already exists or invalid input data
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+    get:
+      summary: Get all companies
+      tags:
+        - Companies
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+      responses:
+        "200":
+          description: Company data retrieved successfully
+          schema:
+            type: object
+            # Specify the company data structure here
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+  /api/companies/{id}:
+    get:
+      summary: Get a company by its ID
+      tags:
+        - Companies
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company
+      responses:
+        "200":
+          description: Company data retrieved successfully
+          schema:
+            type: object
+            # Specify the company data structure here
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
 
+    put:
+      summary: Update a company
+      tags:
+        - Companies
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company to update
+        - in: body
+          name: companyDetails
+          description: Company details to update
+          schema:
+            type: object
+            # Specify the company properties that can be updated
+      responses:
+        "200":
+          description: Company updated successfully
+        "400":
+          description: Invalid input data
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Delete a company
+      tags:
+        - Companies
+      parameters:
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: JWT Token
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: Unique identifier of the company to delete
+      responses:
+        "200":
+          description: Company deleted successfully
+        "404":
+          description: Company not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -311,3 +531,37 @@ definitions:
         type: boolean
       listClaim:
         type: array
+  Company:
+    type: object
+    properties:
+      id:
+        type: string
+      companyName:
+        type: string
+      address:
+        type: string
+      phoneNumber:
+        type: string
+      userNameAdmin:
+        type: string
+      passwordAdmin:
+        type: string
+      subscriptionId:
+        type: string
+      userId:
+        type: string
+      emailCompany:
+        type: string
+      taxCompany:
+        type: string
+      countryCode:
+        type: string
+      imageCompany:
+        type: string
+      startDateSubs:
+        type: string
+  CompanyDelete:
+    type: object
+    properties:
+      id:
+        type: string

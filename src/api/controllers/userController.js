@@ -9,8 +9,11 @@ const { ObjectId } = require('mongodb');
 const { use } = require('../routes/userRoutes');
 const moment = require('moment');
 const collectionName = 'users';
-
+// #swagger.tags = ['Users']
+// #swagger.description = 'Endpoint to manage users.'
 async function createUser(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     try {
         let role_id = req.body.role_Id;
         if (!role_id) {
@@ -37,6 +40,8 @@ async function createUser(req, res) {
 }
 
 async function login(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     try {
         console.log("login");
         const { email, password } = req.body;
@@ -93,6 +98,8 @@ async function login(req, res) {
     }
 }
 async function changePassword(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     try {
         const { oldPassword, newPassword } = req.body;
         const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
@@ -129,6 +136,8 @@ async function changePassword(req, res) {
     }
 }
 async function logout(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
     const user = await userService.getUserById(userId);
     if (user == null) {
@@ -140,6 +149,8 @@ async function logout(req, res) {
 }
 
 async function logoutSessions(userId, req) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     const user = await userService.getUserById(userId);
     if (!user) {
         throw new Error("Không tìm thấy user");
@@ -158,6 +169,8 @@ async function logoutSessions(userId, req) {
     }
 }
 async function sendmaildemo(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     console.log("sendmaildemo");
     const { email } = req.body;
 
@@ -172,26 +185,36 @@ async function sendmaildemo(req, res) {
 
 }
 async function verifyEmailRegister(req, res) {
-    const { EmailCode,email } = req.body;
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
+    const { EmailCode, email } = req.body;
     //active
     res.status(200).json({ message: "xác thực mail thành công" });
 
 }
 async function verifyForgotPasswordByEmailCode(req, res) {
-    const { EmailCode,email , newpassword} = req.body;
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
+    const { EmailCode, email, newpassword } = req.body;
     res.status(200).json({ message: "xác thực mail thành công" });
 }
 async function sendVerifyEmail(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     res.status(200).json({ message: "xác thực mail thành công" });
 
 }
 async function updatePasswordForgot(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
-    const { newpassword} = req.body;
+    const { newpassword } = req.body;
     res.status(200).json({ message: "xác thực mail thành công" });
 
 }
 async function forgotPassword(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     //lay email kiem tra ton tai user
     //doi emailcode lai thanh 1 ma~
     //send email ma code do
