@@ -1,0 +1,1 @@
+//các hàm liên quan database
