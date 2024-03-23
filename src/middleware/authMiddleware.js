@@ -38,6 +38,7 @@ function authenticateToken(req, res, next) {
                     return res.sendStatus(403); // Token is invalid
                 }
                 req.user = user; // Attach the user to the request object
+                req.session = session; // Attach the session to the request object
                 next(); // Proceed to the next middleware or request handler
             });
         }

@@ -1,7 +1,7 @@
 const BaseModel = require('./baseModel');
 
 class SessionLogin {
-    constructor(userid, email, name, username, jwttoken,refreshToken,ExpireRefreshToken, expireDate, deviceId, ipAddress) {
+    constructor(userid, email, name, username, jwttoken,refreshToken,ExpireRefreshToken, expireDate, deviceId, ipAddress,dbName) {
         this.userId = userid;
         this.email = email.toLowerCase(); // Storing the email in lowercase
         this.name = name; // Storing the name
@@ -12,6 +12,7 @@ class SessionLogin {
         this.expireDate = expireDate; // Storing the expiration date
         this.deviceId = deviceId; // Storing the device ID
         this.ipAddress = ipAddress; // Storing the IP address
+        this.dbName = dbName;
     }
 }
 

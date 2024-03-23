@@ -1,7 +1,7 @@
-const {
-  CompanyProfile,
-  CompanyProfileWithBase,
-} = require("../../models/profileCompanyModel");
+// const {
+//   CompanyProfile,
+//   CompanyProfileWithBase,
+// } = require("../../models/profileCompanyModel");
 const mongoService = require("../services/mongoService");
 const { hashPassword } = require("../../utils/passwordUtils");
 
@@ -94,7 +94,28 @@ async function getCompanyById(companyId) {
     throw new Error("Error getting company by id: " + error.message);
   }
 }
-
+/**
+ * Gets a company by its ID from the database.
+ * @param {string} companyId - The ID of the company to retrieve.
+ * @returns {Object|null} The company object if found, or null if not.
+ */
+async function getCompanyByUserId(userId) {
+  try {
+    const query = {
+      userId: userId,
+      isDelete: false,
+      isActive: true,
+    };
+    const companies = await mongoService.findDocuments(collectionName, query);
+    if (companies !== null && companies.length > 0) {
+      return companies[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error("Error getting company by userid: " + error.message);
+  }
+}
 /**
  * Update Company by Id
  * @param {string} companyId The id of the company to update
@@ -147,4 +168,5 @@ module.exports = {
   getCompanyById,
   updateCompany,
   deleteCompany,
+  getCompanyByUserId
 };

@@ -27,6 +27,8 @@ async function createUser(user) {
 
 async function updateUser(userId, update) {
     try {
+        console.log(userId);
+        console.log(update);
         update.updateTime = new Date();
         await mongoService.updateDocument(collectionName, { _id: new mongoose.Types.ObjectId(userId) }, update);
         return true;

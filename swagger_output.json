@@ -37,6 +37,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "emailCompany": {
+                  "example": "any"
+                },
                 "companyName": {
                   "example": "any"
                 },
@@ -56,9 +59,6 @@
                   "example": "any"
                 },
                 "userId": {
-                  "example": "any"
-                },
-                "emailCompany": {
                   "example": "any"
                 },
                 "taxCompany": {
@@ -407,9 +407,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "role_Id": {
-                  "example": "any"
-                },
                 "fullname": {
                   "example": "any"
                 },
@@ -534,7 +531,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "EmailCode": {
+                "hash": {
                   "example": "any"
                 },
                 "email": {
@@ -547,6 +544,78 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/forgot-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/users/verify-Forgot-Password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "hash": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "t": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }

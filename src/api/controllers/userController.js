@@ -1,7 +1,10 @@
 const { User, UserWithBase } = require('../../models/userModel');
+// const { CompanyProfile, CompanyProfileWithBase} = require('../../models/profileCompanyModel.js');
 const userService = require('../services/userService');
+const companiesService = require('../services/companyService');
 const { createSession, deleteSession, findSessionByToken, findSessionByEmailAndIP } = require('../services/sessionService'); // Assuming this is the correct path to your session service
-const { hashPassword, comparePassword } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
+const roleService = require('../services/roleService'); // Assuming this is the correct path to your session service
+const { hashPassword, comparePassword,md5Encrypt } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 const { encodejwt, addDuration } = require('../../utils/jwtutils'); // Đảm bảo đường dẫn đúng
 const { sendMail } = require('../../utils/emailUtil'); // Đảm bảo đường dẫn đúng
 const jwt = require('jsonwebtoken');
@@ -14,27 +17,42 @@ const collectionName = 'users';
 async function createUser(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Users"]
+    console.log("ba noicha");
     try {
-        let role_id = req.body.role_Id;
-        if (!role_id) {
-            return res.status(400).json({ message: "Vui lòng cung cấp role_id" });
-        }
-        console.log(req.body);
-        const user = new User(req.body.fullname, req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role_id);
-        console.log(user);
+        const role = await roleService.findByName("User");
+        console.log(role);
+        const user = new User(req.body.fullname, req.body.email, req.body.username, req.body.password, req.body.phoneNumber, role._id);
 
+        if (!role) {
+            return res.status(400).json({ message: "Cannot find Role" });
+        }
         const existUser = await userService.getUserByEmailAndUsername(user.email, user.username);
+        console.log(existUser);
+
         if (existUser !== null) {
             return res.status(401).json({ message: "Email/Username đã tồn tại" });
         }
+        console.log(req.body);
+        console.log(user);
+
         const result = await userService.createUser(user);
         if (result === null) {
             res.status(400).json({ message: 'Không thể tạo User mới' });
         }
-        const userData = { ...result };
+        let userData = { ...result };
+        console.log(userData);
         delete userData.password;
+        delete userData._id;
+        delete userData.role_id;
+        delete userData.twoFASecret;
+
+        //gửi mail confirm ?email=email&hash=hashcuaemailcode-timeout
+        user.emailCode = await md5Encrypt(user.emailCode);
+        await sendMail(user.email, "Welcome to EZCOUNT", user, "verifyEmailTemplate.ejs");
+
         res.status(201).json({ message: 'User created', data: userData });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Error creating user', error });
     }
 }
@@ -48,18 +66,25 @@ async function login(req, res) {
 
         // Use userService to find user by email
         const user = await userService.getUserByEmail(email);
-        if (!user) {
-            return res.status(401).json({ message: "Email không tồn tại" });
+        console.log(!user);
+        if (!user || user.emailConfirmed == false) {
+            return res.status(401).json({ message: "Email not existed or not verify email" });
         }
         console.log(user);
         // Device ID and IP Address (this might require additional logic depending on your setup)
         const deviceId = req.headers['user-agent'] || 'Unknown Device'; // Placeholder, you should have a way to identify devices
         const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+        console.log(deviceId);
+        console.log(ipAddress);
         // Use passwordUtils to compare password
         const isMatch = await comparePassword(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: "Mật khẩu không chính xác" });
         }
+        // const user = {
+        //     email:user.email,
+        //     role_Id: user.role_id
+        // }
 
         // Generate JWT token
         const token = await encodejwt(user); // Assuming encodeJwt generates a token and handles the setting of expiration
@@ -75,7 +100,13 @@ async function login(req, res) {
 
         const tokenExpiryDate = addDuration(token.expiresIn);
         const refreshTokenExpiryDate = addDuration(process.env.REACT_APP_EXPIRE_REFRESH_TOKEN);
-
+        const dbName = null;
+        //kiểm tra có company không
+        const myCompany = await companiesService.getCompanyByUserId(user._id);
+        console.log(myCompany);
+        if (myCompany) {
+            dbName = myCompany.dbName;
+        }
         // Save the session in sessionModel
         await createSession({
             userId: user._id,
@@ -87,7 +118,8 @@ async function login(req, res) {
             ExpireRefreshToken: refreshTokenExpiryDate,
             expireDate: tokenExpiryDate,
             deviceId: deviceId,
-            ipAddress: ipAddress
+            ipAddress: ipAddress,
+            dbName: dbName
         });
 
         // Send token to client
@@ -187,16 +219,67 @@ async function sendmaildemo(req, res) {
 async function verifyEmailRegister(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Users"]
-    const { EmailCode, email } = req.body;
-    //active
-    res.status(200).json({ message: "xác thực mail thành công" });
+    try {
+
+        const { hash, email } = req.body;
+        console.log(hash);
+        console.log(email);
+        let user = await userService.getUserByEmail(email);
+        console.log(user);
+        if (!user) {
+            return res.status(400).json({ message: "Cannot find email" });
+        }
+        const emailHash = await md5Encrypt(user.emailCode);
+        console.log(emailHash);
+        if (hash != emailHash) {
+            return res.status(400).json({ message: "Cannot verify please try again" });
+        }
+
+        user.emailCode = Math.random().toString(36).substr(2, 5);
+        user.emailConfirmed = true;
+        console.log(user._id.toString());
+        await userService.updateUser(user._id.toString(), user);
+        //active
+        return res.status(200).json({ message: "xác thực mail thành công" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error verify user', error });
+    }
 
 }
 async function verifyForgotPasswordByEmailCode(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Users"]
-    const { EmailCode, email, newpassword } = req.body;
-    res.status(200).json({ message: "xác thực mail thành công" });
+    try {
+
+        const { hash, email, t } = req.body;
+        let user = userService.getUserByEmail(email);
+        if (user == null) {
+            return res.status(400).json({ message: "Email not existed"});
+        }
+        // Lấy timestamp hiện tại
+        const currentTimestamp = moment().valueOf();
+        // Tính chênh lệch giữa timestamp hiện tại và timestamp truyền vào, đơn vị là phút
+        const differenceInMinutes = (currentTimestamp - t) / (1000 * 60);
+
+        // Kiểm tra xem chênh lệch có vượt quá 30 phút không
+        if (differenceInMinutes > 30) {
+            console.log('Email timeout!');
+        } else {
+            console.log('Timestamp truyền vào không vượt quá 30 phút so với hiện tại.');
+            const emailHash = await md5Encrypt(user.emailCode);
+        console.log(emailHash);
+        if (hash != emailHash) {
+            return res.status(400).json({ message: "Cannot verify please try again" });
+        }
+            user.emailCode = Math.random().toString(36).substr(2, 5);
+            await updateUser(user._id, user);
+            res.status(200).json({ message: "xác thực mail thành công" });
+        }
+    } catch (error) {
+        res.status(400).json({ message: "Server error ",error });
+    }
+
 }
 async function sendVerifyEmail(req, res) {
     // #swagger.description = 'Use to request all posts'
@@ -216,9 +299,15 @@ async function forgotPassword(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Users"]
     //lay email kiem tra ton tai user
+    let user = await userService.getUserByEmail(req.body.email);
+    if (!user) return res.status(400).json({ message: "Tài khoản với email này chưa đăng ký!" });
+
     //doi emailcode lai thanh 1 ma~
+    user.emailCode = await md5Encrypt(user.emailCode);
+    user.password = moment().valueOf();
     //send email ma code do
-    res.status(200).json({ message: "aaa" });
+    await sendMail(user.email, "EZCOUNT - Forgot Password", user, "forgotPasswordEmailTemplate.ejs");
+    res.status(200).json({ message: "Da gui Mail" });
 }
 module.exports = {
     createUser,

@@ -1,5 +1,6 @@
-const {
-  CompanyProfile, CompanyProfileWithBase, } = require("../../models/profileCompanyModel");
+// const {
+//   CompanyProfile, CompanyProfileWithBase, } = require("../../models/profileCompanyModel");
+  const stringUltil = require("../../utils/stringUtil");
 const companyService = require("../services/companyService");
 
 async function createCompany(req, res) {
@@ -7,10 +8,12 @@ async function createCompany(req, res) {
   // #swagger.tags = ["Companies"]
   try {
     console.log(res.body);
-    const companyNameDomain = req.body.companyName
-      .toLowerCase()
-      .replace(" ", "");
+    const companyNameDomain = stringUltil.generateSubdomain(req.body.emailCompany);
+    //add dns 
 
+    //add odoo
+
+    //create
     const company = new CompanyProfile(
       req.body.companyName,
       req.body.address,
