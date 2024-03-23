@@ -1,5 +1,6 @@
 const dnsService = require('../services/dnsServices');
 const collectionName = 'dns-record';
+require('dotenv').config();
 
 const CLOUD_FLARE_API = process.env.CLOUD_FLARE_API;
 const CLOUD_FLARE_ZONE_ID = process.env.CLOUD_FLARE_ZONE_ID;
