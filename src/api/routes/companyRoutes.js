@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const companyControllers = require("../controllers/companyControllers");
 const { authenticateToken } = require("../../middleware/authMiddleware");
-//#swagger.tags = ['Companies']
-//#swagger.description = 'Endpoint to manage Roles.'
+
 const apienpoint = "/companies";
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint, authenticateToken, companyControllers.createCompany);

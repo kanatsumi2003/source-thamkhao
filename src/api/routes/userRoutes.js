@@ -3,8 +3,6 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticateToken } = require('../../middleware/authMiddleware'); // Đảm bảo đường dẫn đúng
 const apienpoint = "/users";
-// #swagger.description = 'Use to request all posts'
-// #swagger.tags = ["Users"]
 router.post(apienpoint, userController.createUser);
 router.post(apienpoint+'/sendmaildemo', userController.sendmaildemo);
 router.post(apienpoint+'/login', userController.login);
