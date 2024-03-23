@@ -17,7 +17,6 @@ app.use(express.json());
 
 app.use('/api/dns', dnsRoutes);
 // Set up your API routes
-// #swagger.tags = ['Users']
 app.use('/api',userRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', companyRoutes);
