@@ -5,10 +5,10 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "localhost:3000/api",
+  "host": "api.einvoice.vn/api",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -306,7 +306,7 @@
     "/listRecords/{zone_id}": {
       "get": {
         "tags":[
-          "Records"
+          "Record"
         ],
         "description": "",
         "parameters": [
@@ -329,8 +329,8 @@
     },
     "/searchRecord/{zone_id}/{name}": {
       "get": {
-        "tags": [
-          "Records"
+        "tags":[
+          "Record"
         ],
         "description": "",
         "parameters": [
@@ -360,7 +360,7 @@
     "/createRecord/{zone_id}": {
       "post": {
         "tags":[
-          "Records"
+          "Record"
         ],
         "description": "",
         "parameters": [
@@ -369,11 +369,36 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema":{
+              "type": "object",
+              "properties":{
+                "name": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "content": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
+        
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -384,7 +409,7 @@
     "/deleteRecord/{zone_id}/{id}": {
       "delete": {
         "tags":[
-          "Records"
+          "Record"
         ],
         "description": "",
         "parameters": [
@@ -404,6 +429,12 @@
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400":{
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -414,7 +445,7 @@
     "/updateRecord/{zone_id}/{id}": {
       "patch": {
         "tags":[
-          "Records"
+          "Record"
         ],
         "description": "",
         "parameters": [
@@ -429,11 +460,33 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema":{
+              "type": "object",
+              "properties":{
+                "name": {
+                  "example": "any"
+                },
+                "type":{
+                  "example": "any"
+                }
+              }
+            }
+           
           }
         ],
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "400":{
+            "description": "Bad Request"
+          },
+          "403":{
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"

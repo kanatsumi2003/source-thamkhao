@@ -30,7 +30,6 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             echo "${{ secrets.ENV_FILE_DEV }}" > .env
             echo "TAGS=${{ vars.VERSION_DEV }}" >> $GITHUB_ENV
-
           fi
 
       - name: Build and push docker image to ghcr
