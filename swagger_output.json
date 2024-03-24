@@ -55,22 +55,10 @@
                 "passwordAdmin": {
                   "example": "any"
                 },
-                "subscriptionId": {
-                  "example": "any"
-                },
-                "userId": {
-                  "example": "any"
-                },
                 "taxCompany": {
                   "example": "any"
                 },
                 "countryCode": {
-                  "example": "any"
-                },
-                "imageCompany": {
-                  "example": "any"
-                },
-                "startDateSubs": {
                   "example": "any"
                 }
               }
@@ -132,6 +120,36 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "companyName": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "phoneNumber": {
+                  "example": "any"
+                },
+                "subscriptionId": {
+                  "example": "any"
+                },
+                "emailCompany": {
+                  "example": "any"
+                },
+                "taxCompany": {
+                  "example": "any"
+                },
+                "countryCode": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -143,6 +161,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -211,6 +232,80 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/companies/get-company-by-user": {
+      "post": {
+        "tags": [
+          "Companies"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/companies/upload-image-company": {
+      "post": {
+        "tags": [
+          "Companies"
+        ],
+        "description": "Use to request all posts",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -725,27 +820,17 @@
     },
     "/users/upload-image-profile": {
       "post": {
-        "description": "Uploads a profile image for the user.",
-        "consumes": ["multipart/form-data"],
+        "description": "",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true,
-            "description": "Authorization token"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "type": "file",
-            "required": true,
-            "description": "Profile image to upload"
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Upload successful"
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"

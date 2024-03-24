@@ -1,7 +1,7 @@
-// const {
-//   CompanyProfile,
-//   CompanyProfileWithBase,
-// } = require("../../models/profileCompanyModel");
+const {
+  CompanyProfile,
+  CompanyProfileWithBase,
+} = require("../../models/ProfileCompanyModel");
 const mongoService = require("../services/mongoService");
 const { hashPassword } = require("../../utils/passwordUtils");
 
@@ -38,11 +38,11 @@ async function isCompanyNameExist(companyName) {
 async function createCompany(company) {
   try {
     console.log("CreateCompany(company)", company);
-    let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
+    // let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
 
-    if (isCompanyNameExist) {
-      return null;
-    }
+    // if (isCompanyNameExist) {
+    //   return null;
+    // }
 
     let fullCompany = new CompanyProfileWithBase(company);
     fullCompany.passwordAdmin = await hashPassword(company.passwordAdmin);
@@ -130,11 +130,21 @@ async function updateCompany(companyId, company) {
       return false;
     }
     company.updateTime = new Date();
-    await mongoService.updateDocument(
-      collectionName,
-      { _id: new mongoose.Types.ObjectId(companyId) },
-      company
-    );
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: new mongoose.Types.ObjectId(companyId) },
+        company
+      );
+
+    } else {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: companyId },
+        company
+      );
+    }
+
     return true;
   } catch (error) {
     throw new Error("Error updating company: " + error.message);
