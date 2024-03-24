@@ -1,7 +1,7 @@
 const {
   CompanyProfile,
   CompanyProfileWithBase,
-} = require("../../models/ProfileCompanyModel");
+} = require("../../models/profileCompanyModel");
 const mongoService = require("../services/mongoService");
 const { hashPassword } = require("../../utils/passwordUtils");
 
