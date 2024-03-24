@@ -5,7 +5,7 @@ const { authenticateToken } = require('../../middleware/authMiddleware'); // ƒê·
 const multer  = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const apienpoint = "/users";
-router.post(apienpoint, userController.createUser);
+router.post(apienpoint+'/register', userController.createUser);
 router.post(apienpoint + '/login', userController.login);
 router.post(apienpoint + '/verifyEmail', userController.verifyEmailRegister);
 router.post(apienpoint + '/forgot-password', userController.forgotPassword);
