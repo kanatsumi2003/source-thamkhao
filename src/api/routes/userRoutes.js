@@ -10,7 +10,7 @@ router.post(apienpoint + '/login', userController.login);
 router.post(apienpoint + '/verifyEmail', userController.verifyEmailRegister);
 router.post(apienpoint + '/forgot-password', userController.forgotPassword);
 router.post(apienpoint + '/verify-Forgot-Password', userController.verifyForgotPasswordByEmailCode);
-router.post(apienpoint + '/sendVerifyEmail', userController.sendVerifyEmail);
+// router.post(apienpoint + '/sendVerifyEmail', userController.sendVerifyEmail);
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint + '/change-password', authenticateToken, userController.changePassword);
 // #swagger.security = [{ "apiKeyAuth": [] }]

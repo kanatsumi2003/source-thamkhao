@@ -35,7 +35,7 @@ async function createCompany(req, res) {
       0,
       0,
       0,
-      "aaa"
+      "aaa" // lấy apikey của odoo bỏ vô đây
     );
     console.log(company);
 
