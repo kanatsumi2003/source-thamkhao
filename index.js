@@ -15,7 +15,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/api/dns', dnsRoutes);
+app.use('/api', dnsRoutes);
 // Set up your API routes
 app.use('/api',userRoutes);
 app.use('/api', roleRoutes);

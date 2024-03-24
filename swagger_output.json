@@ -274,21 +274,11 @@
           "Companies"
         ],
         "description": "Use to request all posts",
-        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true,
-            "description": "Authorization token"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "type": "file",
-            "required": true,
-            "description": "Profile image to upload"
+            "type": "string"
           }
         ],
         "responses": {
@@ -313,8 +303,11 @@
         }
       }
     },
-    "/listDns/{zone_id}": {
+    "/listRecords/{zone_id}": {
       "get": {
+        "tags":[
+          "Records"
+        ],
         "description": "",
         "parameters": [
           {
@@ -334,8 +327,11 @@
         }
       }
     },
-    "/searchDns/{zone_id}/{name}": {
+    "/searchRecord/{zone_id}/{name}": {
       "get": {
+        "tags": [
+          "Records"
+        ],
         "description": "",
         "parameters": [
           {
@@ -361,8 +357,11 @@
         }
       }
     },
-    "/createDns/{zone_id}": {
+    "/createRecord/{zone_id}": {
       "post": {
+        "tags":[
+          "Records"
+        ],
         "description": "",
         "parameters": [
           {
@@ -382,8 +381,11 @@
         }
       }
     },
-    "/deleteDns/{zone_id}/{id}": {
+    "/deleteRecord/{zone_id}/{id}": {
       "delete": {
+        "tags":[
+          "Records"
+        ],
         "description": "",
         "parameters": [
           {
@@ -409,8 +411,11 @@
         }
       }
     },
-    "/updateDns/{zone_id}/{id}": {
+    "/updateRecord/{zone_id}/{id}": {
       "patch": {
+        "tags":[
+          "Records"
+        ],
         "description": "",
         "parameters": [
           {
@@ -685,19 +690,6 @@
         }
       }
     },
-    "/users/sendVerifyEmail": {
-      "post": {
-        "tags": [
-          "Users"
-        ],
-        "description": "Use to request all posts",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/users/change-password": {
       "post": {
         "tags": [
@@ -821,21 +813,11 @@
     "/users/upload-image-profile": {
       "post": {
         "description": "",
-        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true,
-            "description": "Authorization token"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "type": "file",
-            "required": true,
-            "description": "Profile image to upload"
+            "type": "string"
           }
         ],
         "responses": {
