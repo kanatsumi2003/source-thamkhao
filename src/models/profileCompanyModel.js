@@ -13,7 +13,7 @@ class CompanyProfile {
         this.taxCompany = taxCompany; // Storing the company's tax information
         this.countryCode = countryCode; // Storing the country code
         this.imageCompany = imageCompany; // Storing the company's image
-        this.dbName = dbName; // Storing the database name
+        this.dbName = dbName; // Storing the database name// not exited
         this.domainName = domainName; // Storing the domain name
         this.startDateSubs = startDateSubs; // Storing the start date of the subscription
         this.totalInvoices = totalInvoices; // Storing the total number of invoices

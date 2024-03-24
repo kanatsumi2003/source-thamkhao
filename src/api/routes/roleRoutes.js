@@ -7,8 +7,6 @@ const apienpoint = "/roles";
 // Tạo role mới
 // router.post('/', authenticateToken,authorizationMiddleware, roleController.createRole);
 
-// #swagger.tags = ['Roles']
-// #swagger.description = 'Endpoint to manage Roles.'
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint,authenticateToken,authorizationMiddleware(["Admin"]),roleController.createRole);
 // router.put('/', authenticateToken, roleController.updateRole);

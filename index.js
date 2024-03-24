@@ -20,7 +20,7 @@ app.use('/api/dns', dnsRoutes);
 app.use('/api',userRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', companyRoutes);
-
+app.use('/public', express.static('public'));
 // Set up Swagger UI
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))

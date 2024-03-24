@@ -72,6 +72,15 @@ async function findSessionByEmailAndIP(email, ipAddress,deviceId) {
     const sessions = await mongoService.findDocuments(collectionName, query);
     return sessions; // This could return multiple sessions if there are multiple sessions for the same email and IP
 }
+async function findSessionByEmail(email) {
+    const query = {
+        email: email.toLowerCase(), // Assuming email is stored in lowercase
+        isDelete: { $ne: true } // Assuming you have a flag for soft deletes
+    };
+
+    const sessions = await mongoService.findDocuments(collectionName, query);
+    return sessions; // This could return multiple sessions if there are multiple sessions for the same email and IP
+}
 module.exports = {
     createSession,
     updateSession,
@@ -79,6 +88,7 @@ module.exports = {
     findById,
     findSessionByToken,
     findSessionByEmailAndIP,
-    deleteSessionByJWTToken
+    deleteSessionByJWTToken,
+    findSessionByEmail
     // Add more exported functions as needed
 };

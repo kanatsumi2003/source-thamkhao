@@ -1,0 +1,1 @@
+//các apoi gọi tới odoo liên quan user

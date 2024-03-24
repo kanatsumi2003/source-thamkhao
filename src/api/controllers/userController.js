@@ -2,18 +2,19 @@ const { User, UserWithBase } = require('../../models/userModel');
 // const { CompanyProfile, CompanyProfileWithBase} = require('../../models/profileCompanyModel.js');
 const userService = require('../services/userService');
 const companiesService = require('../services/companyService');
-const { createSession, deleteSession, findSessionByToken, findSessionByEmailAndIP } = require('../services/sessionService'); // Assuming this is the correct path to your session service
+const { createSession, deleteSession, findSessionByToken, findSessionByEmailAndIP, findSessionByEmail } = require('../services/sessionService'); // Assuming this is the correct path to your session service
 const roleService = require('../services/roleService'); // Assuming this is the correct path to your session service
-const { hashPassword, comparePassword,md5Encrypt } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
+const { hashPassword, comparePassword, md5Encrypt } = require('../../utils/passwordUtils'); // Đảm bảo đường dẫn đúng
 const { encodejwt, addDuration } = require('../../utils/jwtutils'); // Đảm bảo đường dẫn đúng
 const { sendMail } = require('../../utils/emailUtil'); // Đảm bảo đường dẫn đúng
 const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const { use } = require('../routes/userRoutes');
+const path = require('path');
+const fs = require('fs');
 const moment = require('moment');
 const collectionName = 'users';
-// #swagger.tags = ['Users']
-// #swagger.description = 'Endpoint to manage users.'
+
 async function createUser(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Users"]
@@ -253,9 +254,12 @@ async function verifyForgotPasswordByEmailCode(req, res) {
     try {
 
         const { hash, email, t } = req.body;
-        let user = userService.getUserByEmail(email);
+        console.log(email);
+        let user = await userService.getUserByEmail(email);
+        console.log(user);
+
         if (user == null) {
-            return res.status(400).json({ message: "Email not existed"});
+            return res.status(400).json({ message: "Email not existed" });
         }
         // Lấy timestamp hiện tại
         const currentTimestamp = moment().valueOf();
@@ -267,17 +271,53 @@ async function verifyForgotPasswordByEmailCode(req, res) {
             console.log('Email timeout!');
         } else {
             console.log('Timestamp truyền vào không vượt quá 30 phút so với hiện tại.');
+            console.log(user.emailCode);
             const emailHash = await md5Encrypt(user.emailCode);
-        console.log(emailHash);
-        if (hash != emailHash) {
-            return res.status(400).json({ message: "Cannot verify please try again" });
-        }
+            console.log(emailHash);
+            if (hash != emailHash) {
+                return res.status(400).json({ message: "Cannot verify please try again" });
+            }
             user.emailCode = Math.random().toString(36).substr(2, 5);
-            await updateUser(user._id, user);
-            res.status(200).json({ message: "xác thực mail thành công" });
+            await userService.updateUser(user._id, user);
+
+            // Generate JWT token
+            const token = await encodejwt(user); // Assuming encodeJwt generates a token and handles the setting of expiration
+
+            const session = await findSessionByEmail(email); // kiểm tra có login nào  trong cùng device và ip ko
+
+            if (session != null && session.length >= 0) {
+                for (const sess of session) {
+                    await deleteSession(sess._id); // Assuming each session document has an _id field
+                }
+            }
+            // Assuming encodeJwt returns an object with the token and its expiry
+
+            const tokenExpiryDate = addDuration(token.expiresIn);
+            const refreshTokenExpiryDate = addDuration(process.env.REACT_APP_EXPIRE_REFRESH_TOKEN);
+            const dbName = null;
+            //kiểm tra có company không
+            const myCompany = await companiesService.getCompanyByUserId(user._id);
+            console.log(myCompany);
+            if (myCompany) {
+                dbName = myCompany.dbName;
+            }
+            // Save the session in sessionModel
+            await createSession({
+                userId: user._id,
+                email: user.email,
+                name: user.name || "unknown", // Assuming user object has a name field
+                username: user.username.toLowerCase(), // Assuming user object has a username field
+                jwttoken: token.token, // Assuming the token object has a token field
+                refreshToken: token.refreshToken,
+                ExpireRefreshToken: refreshTokenExpiryDate,
+                expireDate: tokenExpiryDate,
+                dbName: dbName
+            });
+
+            res.status(200).json(token.token);
         }
     } catch (error) {
-        res.status(400).json({ message: "Server error ",error });
+        res.status(400).json({ message: "Server error ", error });
     }
 
 }
@@ -292,8 +332,27 @@ async function updatePasswordForgot(req, res) {
     // #swagger.tags = ["Users"]
     const userId = req.user.userId; // Giả sử 'req.user' đã được set bởi middleware xác thực JWT
     const { newpassword } = req.body;
-    res.status(200).json({ message: "xác thực mail thành công" });
+    try {
+        let user = await userService.getUserByEmail(req.user.email);
+        if (!user) {
+            return res.status(401).json({ message: "User not  found!" });
+        }
+        user.password = await hashPassword(newpassword);
+        await userService.updateUser(user._id, user);
+        //delete all session cu
+        const session = await findSessionByEmail(user.email); // kiểm tra có login nào  trong cùng device và ip ko
 
+        if (session != null && session.length >= 0) {
+            for (const sess of session) {
+                await deleteSession(sess._id); // Assuming each session document has an _id field
+            }
+        }
+        //
+        res.status(200).json({ message: "Change password  successfully! Please login again." });
+    } catch (err) {
+        console.log("Error : ", err);
+        res.status(500).json({ message: "Internal server error!" });
+    }
 }
 async function forgotPassword(req, res) {
     // #swagger.description = 'Use to request all posts'
@@ -309,6 +368,105 @@ async function forgotPassword(req, res) {
     await sendMail(user.email, "EZCOUNT - Forgot Password", user, "forgotPasswordEmailTemplate.ejs");
     res.status(200).json({ message: "Da gui Mail" });
 }
+
+async function myProfile(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
+    //lay email kiem tra ton tai user
+    let user = await userService.getUserByEmail(req.user.email);
+    if (!user) return res.status(400).json({ message: "Unauthorize" });
+
+    let userData = { ...user };
+    console.log(userData);
+    delete userData.password;
+    delete userData._id;
+    delete userData.role_id;
+    delete userData.twoFASecret;
+    delete userData.emailCode;
+    //tra moel
+    res.status(200).json(userData);
+}
+/**
+ * @swagger
+ * /users/upload-image-profile:
+ *   post:
+ *     security:
+ *       - apiKeyAuth: []
+ *     description: Upload user profile image
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         type: string
+ *         required: true
+ *         description: User's authorization token
+ *       - in: formData
+ *         name: file
+ *         type: file
+ *         required: true
+ *         description: Profile image to upload
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ *       500:
+ *         description: Internal server error
+ */
+async function uploadImageProfile(req, res) {
+    console.log(req.user);
+    // Kiểm tra xem có file được upload không
+    if (!req.file) {
+        return res.status(400).send({ message: 'No file uploaded.' });
+    }
+
+    // Lấy thông tin file
+    const file = req.file;
+    const timeFolder = Date.now();
+    const dirPath = '/public/uploads/' + req.user.userId + '/avatar/';
+    console.log("dirPath ",'../../../'+dirPath);
+    const baseDir = path.join(__dirname, '../../../'+dirPath);
+    console.log(baseDir);
+    try {
+        fs.mkdirSync(baseDir, { recursive: true });
+    } catch (err) {
+        console.error(err);
+        // Thêm logic xử lý lỗi tại đây, ví dụ: trả về phản hồi lỗi cho client
+    }
+
+  // Tạo tên file mới với ID người dùng và timestamp để đảm bảo tên file là duy nhất
+  const newFileName = req.user.userId + '-' + timeFolder + path.extname(file.originalname);
+  const targetPath = path.join(baseDir, newFileName);
+  console.log('targetPath', targetPath);
+
+    // Di chuyển file từ thư mục tạm thời vào thư mục đích
+    fs.rename(file.path, targetPath, async (err) => {
+        if (err) {
+            fs.unlink(file.path, () => {});
+            return res.status(500).send({ message: 'Could not process the file.' });
+        }
+
+        const email = req.user.email;
+        let user = await userService.getUserByEmail(email);
+
+        if (!user) {
+            return res.status(404).send({ message: 'User not found.' });
+        }
+
+        // Lưu đường dẫn của file mới vào cơ sở dữ liệu, lưu ý rằng bạn nên lưu đường dẫn tương đối thay vì đường dẫn tuyệt đối
+        const imagePath = `${dirPath}${newFileName}`;
+        // await userService.updateUserProfileImage(user._id, imagePath);
+
+        res.status(200).json({ message: 'Image uploaded successfully.', imagePath: imagePath });
+    });
+}
 module.exports = {
     createUser,
     login,
@@ -319,5 +477,7 @@ module.exports = {
     sendVerifyEmail,
     forgotPassword,
     verifyForgotPasswordByEmailCode,
-    updatePasswordForgot
+    updatePasswordForgot,
+    myProfile,
+    uploadImageProfile
 };

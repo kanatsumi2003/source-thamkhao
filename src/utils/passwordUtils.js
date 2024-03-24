@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 // Hàm mã hóa MD5
-function md5Encrypt(data) {
+async function md5Encrypt(data) {
     return crypto.createHash('md5').update(data).digest('hex');
 }
 // Hàm băm mật khẩu
