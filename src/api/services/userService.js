@@ -142,6 +142,7 @@ async function getUserByEmailRegister(email) {
         console.log(query);
         const users = await mongoService.findDocuments(collectionName, query);
         console.log(users);
+
         if (users === null && users.length <= 0) {
             return null;
         }
