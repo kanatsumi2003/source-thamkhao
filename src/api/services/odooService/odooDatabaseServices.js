@@ -135,7 +135,7 @@ async function stopDatabase(userId, dbName, master_pwd,
  * Check if the user exists
  * @param userId
  * @param dbName
- * @returns {Promise<void>}
+ * @returns {Promise<*>}
  * @throws Error if the user does not exist
  */
 checkUserExist = async (userId, dbName) => {
