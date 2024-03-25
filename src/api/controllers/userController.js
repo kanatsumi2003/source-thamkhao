@@ -223,9 +223,7 @@ async function verifyEmailRegister(req, res) {
     try {
 
         const { hash, email } = req.body;
-        console.log(hash);
-        console.log(email);
-        let user = await userService.getUserByEmail(email);
+        let user = await userService.getUserByEmailRegister(email);
         console.log(user);
         if (!user) {
             return res.status(400).json({ message: "Cannot find email" });
