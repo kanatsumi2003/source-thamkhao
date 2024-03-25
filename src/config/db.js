@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
+require('dotenv').config()
 
-const uri = "mongodb://adminLong:65f172da0701aebf90587b9b@mongo165.amazingtech.vn:27017/";
+const uri = process.env.CONNECTION_STRING
 const dbName = "EInvoiceDB";
 
 async function connectDB() {

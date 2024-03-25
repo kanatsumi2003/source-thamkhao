@@ -5,10 +5,10 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "api-dev.ezcount.vn/api",
+  "host": "localhost:3000/api",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -303,36 +303,12 @@
         }
       }
     },
-    "/listRecords/{zone_id}": {
+    "/record/{zone_id}": {
       "get": {
-        "tags":[
+        "tags": [
           "Record"
         ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "zone_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/searchRecord/{zone_id}/{name}": {
-      "get": {
-        "tags":[
-          "Record"
-        ],
-        "description": "",
+        "description": "Use to request all posts",
         "parameters": [
           {
             "name": "zone_id",
@@ -341,9 +317,8 @@
             "type": "string"
           },
           {
-            "name": "name",
-            "in": "path",
-            "required": true,
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -351,23 +326,32 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/createRecord/{zone_id}": {
+      },
       "post": {
-        "tags":[
+        "tags": [
           "Record"
         ],
-        "description": "",
+        "description": "Use to request all posts",
         "parameters": [
           {
             "name": "zone_id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           },
           {
@@ -389,16 +373,15 @@
             }
           }
         ],
-        
         "responses": {
           "201": {
             "description": "Created"
           },
-          "400": {
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
-            "description": "Unauthorized"
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -406,12 +389,53 @@
         }
       }
     },
-    "/deleteRecord/{zone_id}/{id}": {
+    "/record/{zone_id}/{name}": {
+      "get": {
+        "tags": [
+          "Record"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "zone_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/record/{zone_id}/{id}": {
       "delete": {
-        "tags":[
+        "tags": [
           "Record"
         ],
-        "description": "",
+        "description": "Use to request all posts",
         "parameters": [
           {
             "name": "zone_id",
@@ -423,6 +447,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           }
         ],
@@ -430,24 +459,22 @@
           "201": {
             "description": "Created"
           },
-          "400":{
-            "description": "Bad Request"
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
-            "description": "Unauthorized"
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/updateRecord/{zone_id}/{id}": {
+      },
       "patch": {
-        "tags":[
+        "tags": [
           "Record"
         ],
-        "description": "",
+        "description": "Use to request all posts",
         "parameters": [
           {
             "name": "zone_id",
@@ -459,6 +486,11 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           },
           {
@@ -475,18 +507,17 @@
                 }
               }
             }
-           
           }
         ],
         "responses": {
           "201": {
             "description": "Created"
           },
-          "400":{
-            "description": "Bad Request"
-          },
-          "403":{
+          "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
