@@ -8,7 +8,7 @@
   "host": "api-dev.ezcount.vn/api",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
