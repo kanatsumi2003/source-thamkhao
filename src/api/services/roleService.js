@@ -58,7 +58,7 @@ async function findById(roleId) {
 }
 
 async function findByName(roleName) {
-    const query = { name: roleName.toLowerCase(), isDelete: false, isActive: true };
+    const query = { name: roleName, isDelete: false, isActive: true };
     const roles = await mongoService.findDocuments(collectionName, query);
     if(roles==null && roles.length<=0){
         return null;

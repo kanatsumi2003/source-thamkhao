@@ -8,7 +8,6 @@ function authenticateToken(req, res, next) {
     console.log("authenticateToken");
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    console.log(token);
     if (!token) {
         return res.sendStatus(401); // No token provided
     }
@@ -23,9 +22,6 @@ function authenticateToken(req, res, next) {
         // Check if the token is expired
         // const now = new Date();
         const now = moment();
-        console.log(now);
-        console.log(session.expireDate);
-        console.log("aaaaaaaaaaaaaaaaaaa");
         if (session.expireDate < now) {
             // Token has expired, delete the session
             deleteSession(session._id).then(() => {
@@ -38,6 +34,8 @@ function authenticateToken(req, res, next) {
                     return res.sendStatus(403); // Token is invalid
                 }
                 req.user = user; // Attach the user to the request object
+                req.session = session; // Attach the session to the request object
+                console.log("done authen");
                 next(); // Proceed to the next middleware or request handler
             });
         }

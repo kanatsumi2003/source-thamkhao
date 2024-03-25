@@ -4,27 +4,27 @@ const { hashPassword, comparePassword } = require('../utils/passwordUtils'); // 
 const bcrypt = require('bcryptjs');
 const speakeasy = require('speakeasy');
 class User {
-    constructor(FullName, email, username, password, phoneNumber,role_id) {
-        this.FullName=FullName;
+    constructor(FullName, email, username, password, phoneNumber, role_id, imageUser) {
+        this.FullName = FullName;
         this.email = email;
         this.username = username;
         this.password = password; // Nhớ băm mật khẩu trước khi lưu
         this.phoneNumber = phoneNumber;
         this.emailConfirmed = false;
         this.phoneConfirmed = false;
-        this.emailCode =  Math.random().toString(36).substr(2,5);//Mã xác minh tài khoản của user nếu  chưa được xác 
+        this.emailCode = Math.random().toString(36).substr(2, 5);//Mã xác minh tài khoản của user nếu  chưa được xác 
         this.enable2FA = false;
-        this.twoFASecret = speakeasy.generateSecret({length: 20}).base32;
+        this.twoFASecret = speakeasy.generateSecret({ length: 20 }).base32;
         // Kiểm tra nếu role_id không phải là ObjectId hợp lệ
         if (!mongoose.Types.ObjectId.isValid(role_id)) {
             this.role_id = new mongoose.Types.ObjectId(role_id); // Chuyển đổi role_Id thành ObjectId
             console.log("this.role_id = new mongoose.Types.ObjectId(role_id);");
 
-        }else{
-            this.role_id = role_id; 
+        } else {
+            this.role_id = role_id;
             console.log("this.role_id");
         }
-
+        this.imageUser = imageUser;
     }
     async isCorrectPassword(plainPassword) {
         try {

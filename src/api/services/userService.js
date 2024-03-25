@@ -27,8 +27,16 @@ async function createUser(user) {
 
 async function updateUser(userId, update) {
     try {
+        console.log(userId);
+        console.log(update);
         update.updateTime = new Date();
-        await mongoService.updateDocument(collectionName, { _id: new mongoose.Types.ObjectId(userId) }, update);
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            await mongoService.updateDocument(collectionName, { _id: new mongoose.Types.ObjectId(userId) }, update);
+
+        } else {
+            await mongoService.updateDocument(collectionName, { _id: userId }, update);
+        }
+        
         return true;
     } catch (error) {
         throw new Error('Error updating user: ' + error.message);
@@ -117,7 +125,7 @@ async function getUserByEmailAndUsername(email, username) {
 }
 async function getUserByEmail(email) {
     try {
-        const query = { email: email, isDelete: false, isActive: true };
+        const query = { email: email, isDelete: false, isActive: true,emailConfirmed:true };
         const users = await mongoService.findDocuments(collectionName, query);
         if (users === null && users.length <= 0) {
             return null;
@@ -130,7 +138,7 @@ async function getUserByEmail(email) {
 
 async function getUserByUsername(username) {
     try {
-        const query = { username: username.toLowerCase(), isDelete: false, isActive: true };
+        const query = { username: username.toLowerCase(), isDelete: false, isActive: true,emailConfirmed:true };
         const users = await mongoService.findDocuments(collectionName, query);
         return users[0];
     } catch (error) {

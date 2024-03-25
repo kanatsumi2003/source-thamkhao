@@ -5,10 +5,10 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "api.einvoice.vn/api",
+  "host": "localhost:3000/api",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -274,11 +274,21 @@
           "Companies"
         ],
         "description": "Use to request all posts",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {
@@ -303,11 +313,8 @@
         }
       }
     },
-    "/listRecords/{zone_id}": {
+    "/listDns/{zone_id}": {
       "get": {
-        "tags":[
-          "Record"
-        ],
         "description": "",
         "parameters": [
           {
@@ -327,11 +334,8 @@
         }
       }
     },
-    "/searchRecord/{zone_id}/{name}": {
+    "/searchDns/{zone_id}/{name}": {
       "get": {
-        "tags":[
-          "Record"
-        ],
         "description": "",
         "parameters": [
           {
@@ -357,11 +361,8 @@
         }
       }
     },
-    "/createRecord/{zone_id}": {
+    "/createDns/{zone_id}": {
       "post": {
-        "tags":[
-          "Record"
-        ],
         "description": "",
         "parameters": [
           {
@@ -369,36 +370,11 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema":{
-              "type": "object",
-              "properties":{
-                "name": {
-                  "example": "any"
-                },
-                "type": {
-                  "example": "any"
-                },
-                "content": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
-        
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -406,11 +382,8 @@
         }
       }
     },
-    "/deleteRecord/{zone_id}/{id}": {
+    "/deleteDns/{zone_id}/{id}": {
       "delete": {
-        "tags":[
-          "Record"
-        ],
         "description": "",
         "parameters": [
           {
@@ -429,12 +402,6 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "400":{
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -442,11 +409,8 @@
         }
       }
     },
-    "/updateRecord/{zone_id}/{id}": {
+    "/updateDns/{zone_id}/{id}": {
       "patch": {
-        "tags":[
-          "Record"
-        ],
         "description": "",
         "parameters": [
           {
@@ -460,33 +424,11 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema":{
-              "type": "object",
-              "properties":{
-                "name": {
-                  "example": "any"
-                },
-                "type":{
-                  "example": "any"
-                }
-              }
-            }
-           
           }
         ],
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "400":{
-            "description": "Bad Request"
-          },
-          "403":{
-            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -743,6 +685,19 @@
         }
       }
     },
+    "/users/sendVerifyEmail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Use to request all posts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/users/change-password": {
       "post": {
         "tags": [
@@ -866,11 +821,21 @@
     "/users/upload-image-profile": {
       "post": {
         "description": "",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {

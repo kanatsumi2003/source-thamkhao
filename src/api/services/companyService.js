@@ -1,7 +1,7 @@
 const {
   CompanyProfile,
   CompanyProfileWithBase,
-} = require("../../models/profileCompanyModel");
+} = require("../../models/ProfileCompanyModel");
 const mongoService = require("../services/mongoService");
 const { hashPassword } = require("../../utils/passwordUtils");
 
@@ -38,11 +38,11 @@ async function isCompanyNameExist(companyName) {
 async function createCompany(company) {
   try {
     console.log("CreateCompany(company)", company);
-    let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
+    // let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
 
-    if (isCompanyNameExist) {
-      return null;
-    }
+    // if (isCompanyNameExist) {
+    //   return null;
+    // }
 
     let fullCompany = new CompanyProfileWithBase(company);
     fullCompany.passwordAdmin = await hashPassword(company.passwordAdmin);
@@ -94,7 +94,28 @@ async function getCompanyById(companyId) {
     throw new Error("Error getting company by id: " + error.message);
   }
 }
-
+/**
+ * Gets a company by its ID from the database.
+ * @param {string} companyId - The ID of the company to retrieve.
+ * @returns {Object|null} The company object if found, or null if not.
+ */
+async function getCompanyByUserId(userId) {
+  try {
+    const query = {
+      userId: userId,
+      isDelete: false,
+      isActive: true,
+    };
+    const companies = await mongoService.findDocuments(collectionName, query);
+    if (companies !== null && companies.length > 0) {
+      return companies[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error("Error getting company by userid: " + error.message);
+  }
+}
 /**
  * Update Company by Id
  * @param {string} companyId The id of the company to update
@@ -109,11 +130,21 @@ async function updateCompany(companyId, company) {
       return false;
     }
     company.updateTime = new Date();
-    await mongoService.updateDocument(
-      collectionName,
-      { _id: new mongoose.Types.ObjectId(companyId) },
-      company
-    );
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: new mongoose.Types.ObjectId(companyId) },
+        company
+      );
+
+    } else {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: companyId },
+        company
+      );
+    }
+
     return true;
   } catch (error) {
     throw new Error("Error updating company: " + error.message);
@@ -147,4 +178,5 @@ module.exports = {
   getCompanyById,
   updateCompany,
   deleteCompany,
+  getCompanyByUserId
 };

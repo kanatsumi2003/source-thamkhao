@@ -15,20 +15,19 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/api/dns', dnsRoutes);
+app.use('/api', dnsRoutes);
 // Set up your API routes
-// #swagger.tags = ['Users']
 app.use('/api',userRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', companyRoutes);
-
+app.use('/public', express.static('public'));
 // Set up Swagger UI
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 const PORT = process.env.REACT_APP_PORT || 3001;
 
 // Start the server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     // Swagger is already set up and doesn't need to be initialized here
 });
