@@ -27,7 +27,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 const PORT = process.env.REACT_APP_PORT || 3001;
 
 // Start the server
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     // Swagger is already set up and doesn't need to be initialized here
 });

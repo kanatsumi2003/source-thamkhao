@@ -137,8 +137,11 @@ async function getUserByEmail(email) {
 }
 async function getUserByEmailRegister(email) {
     try {
+        console.log(email);
         const query = { email: email, isDelete: false, isActive: true};
+        console.log(query);
         const users = await mongoService.findDocuments(collectionName, query);
+        console.log(users);
         if (users === null && users.length <= 0) {
             return null;
         }
