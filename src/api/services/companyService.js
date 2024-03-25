@@ -171,6 +171,27 @@ async function deleteCompany(companyId) {
   }
 }
 
+/**
+ * Get Company by dbName
+ * @param dbName The dbName of the company to get
+ * @returns {Promise<*|null>}
+ */
+async function getCompanyByDbName(dbName) {
+  try {
+    const query = {dbName: dbName, isDelete: false, isActive: true};
+    const company = await mongoService.findDocuments(collectionName, query);
+
+    if (!company) {
+      return company[0];
+    }
+
+    return null;
+
+  } catch (error) {
+    throw new Error("Error getting company by dbName: " + error.message);
+  }
+}
+
 module.exports = {
   createCompany,
   getAllCompanies,
@@ -178,5 +199,6 @@ module.exports = {
   getCompanyById,
   updateCompany,
   deleteCompany,
-  getCompanyByUserId
+  getCompanyByUserId,
+  getCompanyByDbName
 };
