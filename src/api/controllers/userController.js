@@ -223,9 +223,7 @@ async function verifyEmailRegister(req, res) {
     try {
 
         const { hash, email } = req.body;
-        console.log(hash);
-        console.log(email);
-        let user = await userService.getUserByEmail(email);
+        let user = await userService.getUserByEmailRegister(email);
         console.log(user);
         if (!user) {
             return res.status(400).json({ message: "Cannot find email" });
@@ -235,11 +233,10 @@ async function verifyEmailRegister(req, res) {
         if (hash != emailHash) {
             return res.status(400).json({ message: "Cannot verify please try again" });
         }
-
         user.emailCode = Math.random().toString(36).substr(2, 5);
         user.emailConfirmed = true;
         console.log(user._id.toString());
-        await userService.updateUser(user._id.toString(), user);
+        await userService.updateUser(user._id, user);
         //active
         return res.status(200).json({ message: "xác thực mail thành công" });
     } catch (error) {

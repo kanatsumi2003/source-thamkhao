@@ -274,11 +274,21 @@
           "Companies"
         ],
         "description": "Use to request all posts",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {
@@ -897,11 +907,21 @@
     "/users/upload-image-profile": {
       "post": {
         "description": "",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {
