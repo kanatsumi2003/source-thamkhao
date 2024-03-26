@@ -13,7 +13,7 @@ const axios = require('../../../utils/axiosUtil');
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string, isSuccess: boolean}>}
  */
-async function activeOdooModule(userId, master_pwd, dbname,
+async function activateModule(userId, master_pwd, dbname,
                                 lang, password, moduleId) {
 
     const company = await isExistCompanyByDbName(dbname);
@@ -76,6 +76,7 @@ async function deactivateModule(userId, master_pwd, dbName,
 
         return {
             message: "Successfully deactivate module",
+            isSuccess: true,
             data: result
         };
 
@@ -112,6 +113,7 @@ async function upgradeModule(userId, master_pwd, dbName, lang, password, moduleI
 
         return {
             message: "Successfully upgrade module",
+            isSuccess: true,
             data: result
         };
 
@@ -142,6 +144,7 @@ async function getAllModules(userId, dbName, moduleId) {
 
         return {
             message: "Successfully get all modules",
+            isSuccess: true,
             data: result
         };
 
@@ -151,7 +154,7 @@ async function getAllModules(userId, dbName, moduleId) {
 }
 
 module.exports = {
-    activeOdooModule,
+    activateModule,
     deactivateModule,
     upgradeModule,
     getAllModules,

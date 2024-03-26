@@ -10,7 +10,7 @@ const {isExistCompanyByDbName} = require("../companyService");
  * @param master_pwd
  * @param lang
  * @param password
- * @returns {Promise<{data: *, message: string}>}
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
 async function getOdooInvoice(userId, dbName, master_pwd,
                                lang, password) {
@@ -33,6 +33,7 @@ async function getOdooInvoice(userId, dbName, master_pwd,
 
         return {
             message: "Successfully get invoices",
+            isSuccess: true,
             data: result
         };
 

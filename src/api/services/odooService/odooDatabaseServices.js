@@ -57,7 +57,7 @@ async function createOdooDatabase(userId, master_pwd, dbName, lang,
  * @param login user name
  * @param phone phone number
  * @param newDbName the new database name
- * @returns {Promise<{data: *, message: string}>}
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
 async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
                                      password, login, phone, newDbName) {
@@ -82,7 +82,8 @@ async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
             data, {});
 
         return {
-            message: "Database duplicated",
+            message: "Database duplicate successfully",
+            isSuccess: true,
             data: result
         };
 
