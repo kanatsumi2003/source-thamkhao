@@ -1,6 +1,6 @@
 const axios = require('../../../utils/axiosUtil');
 const {getUserById} = require("../userService");
-const {getCompanyByDbName} = require("../companyService");
+const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService");
 
 //các hàm liên quan database
 //tokenInfo.dbname => company => apikey
@@ -62,7 +62,7 @@ async function createOdooDatabase(userId, master_pwd, dbName, lang,
 async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
                                      password, login, phone, newDbName) {
 
-    await checkUserExist(userId, dbName);
+    await isExistCompanyByDbName(userId, dbName);
 
     try {
 
@@ -102,7 +102,8 @@ async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
  */
 async function stopDatabase(userId, dbName, master_pwd,
                             stringName, password) {
-     await checkUserExist(userId, dbName);
+
+    await isExistCompanyByDbName(userId, dbName);
 
     try {
 
@@ -130,24 +131,6 @@ async function stopDatabase(userId, dbName, master_pwd,
         throw new Error("Error duplicating odoo database: " + error.message);
     }
 }
-
-/**
- * Check if the user exists
- * @param userId
- * @param dbName
- * @returns {Promise<*>}
- * @throws Error if the user does not exist
- */
-checkUserExist = async (userId, dbName) => {
-    const company = await getCompanyByDbName(dbName);
-    if (!company) {
-        throw new Error("Company not found");
-    }
-
-    if (company.userId !== userId) {
-        throw new Error("You are not authorized to perform this action.");
-    }
-};
 
 module.exports = {
     createOdooDatabase,

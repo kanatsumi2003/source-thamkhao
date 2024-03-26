@@ -192,6 +192,20 @@ async function getCompanyByDbName(dbName) {
   }
 }
 
+async function isExistCompanyByDbName(userId, dbName) {
+
+  const company = await getCompanyByDbName(dbName);
+  if (!company) {
+    throw new Error("Company not found");
+  }
+
+  if (company.userId !== userId) {
+    throw new Error("You are not authorized to perform this action.");
+  }
+
+  return company;
+}
+
 module.exports = {
   createCompany,
   getAllCompanies,
@@ -200,5 +214,6 @@ module.exports = {
   updateCompany,
   deleteCompany,
   getCompanyByUserId,
-  getCompanyByDbName
+  getCompanyByDbName,
+  isExistCompanyByDbName
 };

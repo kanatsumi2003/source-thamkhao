@@ -1,6 +1,6 @@
 //các apoi gọi tới odoo liên quan user;
 
-const {getCompanyByDbName} = require("../companyService");
+const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService");
 const axios = require("../../../utils/axiosUtil");
 
 /**
@@ -15,7 +15,7 @@ const axios = require("../../../utils/axiosUtil");
 async function getOdooUserList(userId, dbName, master_pwd,
                                lang, password) {
 
-    const company = await checkUserExist(userId, dbName);
+    const company = await isExistCompanyByDbName(userId, dbName);
 
     const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/users`;
 
@@ -43,25 +43,44 @@ async function getOdooUserList(userId, dbName, master_pwd,
 }
 
 /**
- * Check if the user exists
+ * Get roles from Odoo
  * @param userId
  * @param dbName
- * @returns {Promise<*>}
- * @throws Error if the user does not exist
+ * @param master_pwd
+ * @param lang
+ * @param password
+ * @returns {Promise<{data: *, message: string}>}
+ * @constructor
  */
-checkUserExist = async (userId, dbName) => {
-    const company = await getCompanyByDbName(dbName);
-    if (!company) {
-        throw new Error("Company not found");
-    }
+async function GetOdooRole(userId, dbName, master_pwd, lang, password) {
 
-    if (company.userId !== userId) {
-        throw new Error("You are not authorized to perform this action.");
-    }
+    const company = await isExistCompanyByDbName(userId, dbName);
 
-    return company;
-};
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/roles`;
+
+    try {
+        const data = {
+            master_pwd: master_pwd,
+            dbname: dbName,
+            lang: lang,
+            password: password,
+        };
+
+        const result = await axios.axiosPost(url, data, {
+            'API_KEY': company.apiKey
+        });
+
+        return {
+            message: "Successfully get roles",
+            data: result
+        };
+
+    } catch (error) {
+        throw new Error("Error at getting role: " + error.message);
+    }
+}
 
 module.exports = {
-    getOdooUserList
+    getOdooUserList,
+    GetOdooRole
 }
