@@ -45,8 +45,8 @@ async function createCompany(req, res) {
     );
     console.log(company);
       
-    queue.sendToQueue('createOdooAndDNS', company.userId)
-    worker.startWorker("createOdooAndDNS");
+    await queue.sendToQueue('createOdooAndDNS', company.userId)
+    await worker.startWorker("createOdooAndDNS");
 
     const fullcompany = new companyModel.CompanyProfileWithBase(company); // phải tạo model with base model để create
     console.log(fullcompany);
