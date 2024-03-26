@@ -49,6 +49,8 @@ async function startWorker(queueName) {
         }
     });
 }
-
+module.exports = {
+    startWorker,
+}
 startWorker("fetchData");
 startWorker("createOdooAndDNS");

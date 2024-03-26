@@ -16,3 +16,6 @@ async function sendToQueue(queueName, message) {
   }, 500);
 }
 
+module.exports = {
+  sendToQueue,
+}

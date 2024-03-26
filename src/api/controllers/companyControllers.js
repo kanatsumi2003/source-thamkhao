@@ -3,6 +3,7 @@ const stringUltil = require("../../utils/stringUtil");
 const companyService = require("../services/companyService");
 const path = require('path');
 const fs = require('fs');
+const worker = require('../../utils/worker');
 async function createCompany(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
@@ -39,6 +40,7 @@ async function createCompany(req, res) {
     );
     console.log(company);
 
+    sendQue
     const fullcompany = new companyModel.CompanyProfileWithBase(company);// phải tạo model with base model để create
     console.log(fullcompany);
 

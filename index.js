@@ -5,6 +5,7 @@ const dnsRoutes = require('./src/api/routes/dnsRoutes.js');
 const companyRoutes = require('./src/api/routes/companyRoutes.js');
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
+const cors = require('./src/middleware/corsMiddleware')
 const YAML = require('yamljs');
 require('dotenv').config();
 
@@ -14,6 +15,7 @@ require('dotenv').config();
 const app = express();
 
 app.use(express.json());
+app.use(cors);
 
 app.use('/api', dnsRoutes);
 // Set up your API routes
