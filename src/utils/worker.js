@@ -1,8 +1,12 @@
 const amqp = require('amqplib');
 const axios = require('axios');
+const companyService = require('../api/services/companyService')
+const dnsService = require('../api/services/dnsServices');
 const { FetchDataModel } = require('../models/fetchDataModel');
 require('dotenv').config();
-
+const CONTENT_RECORD = process.env.CONTENT_RECORD;
+const ZONE_ID = process.env.ZONE_ID;
+const TYPE_RECORD = process.env.TYPE_RECORD
 async function startWorker(queueName) {
     console.log("hello receipt queue");
     const connection = await amqp.connect(process.env.WORKER_QUEUE_URL);
@@ -39,13 +43,24 @@ async function startWorker(queueName) {
                     console.error(`Error calling API: ${error.message}`);
                     // Xử lý lỗi tại đây
                 }
-            }else if(queueName === 'createOdooAndDNS'){
+            } else if (queueName === 'createOdooAndDNS'){
                 //get company => companyid trong mongo
+                try {
+                    const company = await companyService.getCompanyByUserId(msg.content.toString())
+                    const postData = {
+                        type: `${TYPE_RECORD}`,
+                        name: `${company.domainName}`,
+                        content: `${CONTENT_RECORD}`
+                    }
+                    await dnsService.createDnsRecord(ZONE_ID, postData)
+                } catch (error) {
+                    console.log(error.message)
+                }
                 //tạo dns 
                 //gắn subdomain cho odoo đê tạo db    
                 //cập nhật apikeycompany
             }
-            channel.ack(msg); // Acknowledge the message
+            channel.ack(msg); // Acknowledge the mcessage
         }
     });
 }

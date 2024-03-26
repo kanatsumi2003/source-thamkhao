@@ -5,6 +5,7 @@ const { authenticateToken,authorizationMiddleware } = require("../../middleware/
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const apienpoint = "/companies";
+
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint, authenticateToken, companyControllers.createCompany);
 // #swagger.security = [{ "apiKeyAuth": [] }]

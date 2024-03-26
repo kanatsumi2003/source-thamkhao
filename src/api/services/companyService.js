@@ -43,7 +43,7 @@ async function createCompany(company) {
     // if (isCompanyNameExist) {
     //   return null;
     // }
-
+   
     let fullCompany = new CompanyProfileWithBase(company);
     fullCompany.passwordAdmin = await hashPassword(company.passwordAdmin);
     console.log(fullCompany.passwordAdmin);
@@ -171,7 +171,12 @@ async function deleteCompany(companyId) {
   }
 }
 
+function validateCompanyName(name){
+  const allowCharacters = /^[a-zA-Z0-9\s]+$/;
+  return allowCharacters.test(name);
+}
 module.exports = {
+  validateCompanyName,
   createCompany,
   getAllCompanies,
   isCompanyNameExist,

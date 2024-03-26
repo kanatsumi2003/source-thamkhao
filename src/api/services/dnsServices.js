@@ -31,15 +31,27 @@ async function getAllDnsRecords(zone_id) {
   return data;
 }
 
+function validateName(name){
+  const allowCharacters = /^[a-zA-Z0-9\s]+$/; //chỉ cho phép ký tự thường, in hoa, số
+  return allowCharacters.test(name);
+}
+
 async function createDnsRecord(zone_id, postData) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
   const headers = {
     Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
     "Content-Type": "application/json",
   };
+  const check = validateName(postData.name)
+  if(!validateName(postData.name)) { //record name ko được chứa ký tự đặc biệt
+    return {
+      error: "Name can not contain special characters",
+      statusCode: 400
+    }
+  }
   const _postData = {
     type: postData.type, //A, Cname, TXT
-    name: postData.name, //subdomain.domainname.com
+    name: postData.name.replace(/\s/g, ''), //subdomain.domainname.com  //loại bỏ các khoảng trắng
     content: postData.content, //ipv4 address (A), domainname (Cname)
   };
   const data = await axiosUtil

@@ -5,10 +5,10 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "api-dev.ezcount.vn/api",
+  "host": "localhost:3000/api",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -274,21 +274,11 @@
           "Companies"
         ],
         "description": "Use to request all posts",
-        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true,
-            "description": "Authorization token"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "type": "file",
-            "required": true,
-            "description": "Profile image to upload"
+            "type": "string"
           }
         ],
         "responses": {
@@ -907,21 +897,11 @@
     "/users/upload-image-profile": {
       "post": {
         "description": "",
-        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string",
-            "required": true,
-            "description": "Authorization token"
-          },
-          {
-            "name": "file",
-            "in": "formData",
-            "type": "file",
-            "required": true,
-            "description": "Profile image to upload"
+            "type": "string"
           }
         ],
         "responses": {
