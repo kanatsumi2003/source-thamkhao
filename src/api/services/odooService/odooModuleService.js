@@ -16,6 +16,7 @@ const axios = require('../../../utils/axiosUtil');
 async function activateModule(userId, master_pwd, dbname,
                                 lang, password, moduleId) {
 
+    // Check the company is existed and the user is authorized to perform this action
     const company = await isExistCompanyByDbName(dbname);
 
     const url = `https://${dbname}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;

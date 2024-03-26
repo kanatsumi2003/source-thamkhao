@@ -199,6 +199,7 @@ async function isExistCompanyByDbName(userId, dbName) {
     throw new Error("Company not found");
   }
 
+  // Check if the user is authorized to perform this action
   if (company.userId !== userId) {
     throw new Error("You are not authorized to perform this action.");
   }
