@@ -12,21 +12,13 @@ const {isExistCompanyByDbName} = require("../companyService");
  * @param password
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
-async function getOdooInvoice(userId, dbName, master_pwd,
+async function getOdooInvoice(userId, dbName,
                                lang, password) {
 
     const company = await isExistCompanyByDbName(userId, dbName);
-
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/invoices`;
-
+    const params = `?dbname=${dbName}&lang=${lang}&password=${password}`;
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/invoices${params}`;
     try {
-        const data = {
-            master_pwd: master_pwd,
-            dbname: dbName,
-            lang: lang,
-            password: password,
-        };
-
         const result = await axios.axiosPost(url, data, {
             'API_KEY': company.apiKey
         });

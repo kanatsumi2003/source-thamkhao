@@ -7,30 +7,19 @@ const axios = require("../../../utils/axiosUtil");
  * Get users from Odoo
  * @param userId
  * @param dbName
- * @param master_pwd
- * @param lang
- * @param password
  * @returns {Promise<{data: *, message: string}>}
  */
-async function getOdooUserList(userId, dbName, master_pwd,
-                               lang, password) {
+async function getOdooUserList(userId, dbName) {
 
     const company = await isExistCompanyByDbName(userId, dbName);
 
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/users`;
+    const params = `?dbname=${dbName}`;
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/users${params}`;
 
     try {
-        const data = {
-            master_pwd: master_pwd,
-            dbname: dbName,
-            lang: lang,
-            password: password,
-        };
-
-        const result = await axios.axiosPost(url, data, {
+        const result = await axios.axiosGet(url, {
             'API_KEY': company.apiKey
         });
-
         return {
             message: "Successfully get users",
             data: result
@@ -39,34 +28,20 @@ async function getOdooUserList(userId, dbName, master_pwd,
     } catch (error) {
         throw new Error("Error at getting users: " + error.message);
     }
-
 }
 
 /**
  * Get roles from Odoo
  * @param userId
  * @param dbName
- * @param master_pwd
- * @param lang
- * @param password
  * @returns {Promise<{data: *, message: string}>}
- * @constructor
  */
-async function GetOdooRole(userId, dbName, master_pwd, lang, password) {
-
+async function GetOdooRole(userId, dbName) {
     const company = await isExistCompanyByDbName(userId, dbName);
-
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/roles`;
-
+    const params = `?dbname=${dbName}`;
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/roles${params}`;
     try {
-        const data = {
-            master_pwd: master_pwd,
-            dbname: dbName,
-            lang: lang,
-            password: password,
-        };
-
-        const result = await axios.axiosPost(url, data, {
+        const result = await axios.axiosGet(url, {
             'API_KEY': company.apiKey
         });
 
