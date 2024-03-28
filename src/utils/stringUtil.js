@@ -13,10 +13,10 @@ async function stringToSlug(str) {
  * @param {string} email - The user's email address.
  * @returns {string} - The generated subdomain.
 */
-function generateSubdomain(email) {
+function generateSubdomain(companyName, email) {
     // Tách tên người dùng và phần domain từ email
-    const [username, domain] = email.split('@');
-
+    const username = companyName;
+    const domain = email;
     // Tạo hash SHA-256 từ phần domain
     const hash = crypto.createHash('sha256').update(domain).digest('hex');
 
@@ -27,6 +27,13 @@ function generateSubdomain(email) {
     const subdomain = `${username}-${shortHash}`;
     return subdomain;
 }
+function generateRandomDigits(domainName) {
+    const digits = Math.floor(100000 + Math.random() * 900000).toString();
+    const hash = crypto.createHash('sha256').update(digits).digest('hex');
+    const shortHash = hash.substring(0, 5);
+    return `${domainName}-${shortHash}`;
+}
 module.exports = {
+    generateRandomDigits,
     stringToSlug,generateSubdomain
 };  

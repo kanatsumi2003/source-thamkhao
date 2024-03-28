@@ -8,6 +8,7 @@ require("dotenv").config();
 const CLOUD_FLARE_API = process.env.CLOUD_FLARE_API;
 const DNS_RECORD_URL = `${CLOUD_FLARE_API}/zones`;
 const CLOUD_FLARE_AUTH_TOKEN = process.env.TOKEN; //Token header
+const ROOT_ODOO_DOMAIN = process.env.ROOT_ODOO_DOMAIN;
 
 async function getAllDnsRecords(zone_id) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
@@ -32,7 +33,7 @@ async function getAllDnsRecords(zone_id) {
 }
 
 function validateName(name){
-  const allowCharacters = /^[a-zA-Z0-9\s]+$/; //chỉ cho phép ký tự thường, in hoa, số
+  const allowCharacters = /^[a-zA-Z0-9\s-]+$/; //chỉ cho phép ký tự thường, in hoa, số
   return allowCharacters.test(name);
 }
 
@@ -78,12 +79,13 @@ async function findDnsRecordByName(zone_id, searchValue) {
     "Content-Type": "application/json",
   };
   const params = {
-    name: searchValue,
+    name: `${searchValue}.${ROOT_ODOO_DOMAIN}`,
   };
   const data = await axiosUtil
     .axiosSearch(url, params, headers)
     .then((response) => {
       const result = response.data.result;
+      if(result == null) return null;
       console.log(result.map((data) => new DnsRecord(data))); //Return ra giá trị dựa theo dnsRecordModel
       return result.map((data) => new DnsRecord(data));
     })

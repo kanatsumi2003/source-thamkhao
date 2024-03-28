@@ -5,6 +5,9 @@ const path = require("path");
 const fs = require("fs");
 const worker = require("../../utils/worker");
 const queue = require("../../utils/sendQueue");
+
+
+
 async function createCompany(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
@@ -15,8 +18,14 @@ async function createCompany(req, res) {
     const check = companyService.validateCompanyName(req.body.companyName); //check company names ko được chứa ký tự đặc biệt
     if (!check)
       throw new Error("Company name must not contain special characters");
-    const companyNameDomain = req.body.companyName.replace(/\s/g, '');
-    console.log(companyNameDomain);
+    //xóa tất cả khoảng trắng
+    const companyName = req.body.companyName.replace(/\s/g, ""); 
+    console.log(companyName);
+    //tạo domain
+    const companyNameDomain = stringUltil.generateSubdomain(
+      companyName,
+      req.body.emailCompany
+    );
 
     //add dns
 
@@ -44,26 +53,35 @@ async function createCompany(req, res) {
       "aaa" // lấy apikey của odoo bỏ vô đây
     );
     console.log(company);
-      
-    await queue.sendToQueue('createOdooAndDNS', company.userId)
-    await worker.startWorker("createOdooAndDNS");
 
-    const fullcompany = new companyModel.CompanyProfileWithBase(company); // phải tạo model with base model để create
+    let fullcompany = new companyModel.CompanyProfileWithBase(company); // phải tạo model with base model để create
+
+    fullcompany.isActive = false;
+
     console.log(fullcompany);
 
     const result = await companyService.createCompany(fullcompany);
 
+    
     if (result === null)
-      res
-        .status(400)
-        .json({ message: `Company ${company.companyName} existed` });
-
+    res
+    .status(400)
+    .json({ message: `Company ${company.companyName} existed` });
+    
     const companyData = { ...result };
     delete companyData.passwordAdmin;
     delete companyData.dbName;
     delete companyData.apiKey;
-
+    
     res.status(201).json({ message: "Company created", data: companyData });
+    const message = {
+      userPassword: req.body.passwordAdmin,
+      userId: req.user.userId,
+      companyId: result._id,
+    };
+
+    const messageString = JSON.stringify(message)
+    await queue.sendToQueue("createOdooAndDNS", Buffer.from(messageString));
   } catch (error) {
     res
       .status(500)
@@ -75,7 +93,8 @@ async function getAllCompanies(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
-    const companies = await companyService.getAllCompanies();
+    const status = req.status;
+    const companies = await companyService.getAllCompanies(status);
 
     res.status(200).json(companies);
   } catch (error) {
@@ -87,7 +106,8 @@ async function getCompanyById(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
-    const company = await companyService.getCompanyById(req.id);
+    const status = req.status
+    const company = await companyService.getCompanyById(req.id, status);
     const companyData = { ...company };
     delete companyData.passwordAdmin;
     delete companyData.dbName;
@@ -104,7 +124,8 @@ async function getCompanyByUserId(req, res) {
   try {
     console.log("sss");
     console.log(req.user);
-    const company = await companyService.getCompanyByUserId(req.user.userId);
+    const status = req.status
+    const company = await companyService.getCompanyByUserId(req.user.userId, status);
     const companyData = { ...company };
     delete companyData.passwordAdmin;
     delete companyData.dbName;
@@ -128,7 +149,8 @@ async function updateCompany(req, res) {
       taxCompany,
       countryCode,
     } = req.body;
-    let updateCompany = companyService.getCompanyById(companyId);
+    const status = true;
+    let updateCompany = companyService.getCompanyById(companyId, status);
     if (!updateCompany) {
       return res.status(404).json({ message: "Company not found" });
     }
@@ -215,12 +237,10 @@ async function uploadImageCompany(req, res) {
     // await userService.updateUserProfileImage(user._id, imagePath);
     company.imageCompany = imagePath;
     await companyService.updateCompany(company._id, company);
-    res
-      .status(200)
-      .json({
-        message: "Image Company uploaded successfully.",
-        imagePath: imagePath,
-      });
+    res.status(200).json({
+      message: "Image Company uploaded successfully.",
+      imagePath: imagePath,
+    });
   });
 }
 module.exports = {
