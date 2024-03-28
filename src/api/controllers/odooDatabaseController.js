@@ -76,9 +76,27 @@ async function changeOdooDBPassword(req, res) {
     }
 }
 
+async function startOdooDatabaseAgain(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["OdooDatabase"]
+    try {
+        const {original_name, new_name, password} = req.body;
+        const {message, isSuccess, data} = await odooDatabaseService
+            .startDatabaseAgain(original_name, new_name, password);
+        if (isSuccess) {
+            res.status(201).json({message, data});
+        } else {
+            res.status(400).json({message, data});
+        }
+    } catch (error) {
+        res.status(500).json({message: "Error restart Odoo Database", error});
+    }
+}
+
 module.exports = {
     duplicateDatabases,
     stopOdooDatabase,
     changeOdooDBName,
-    changeOdooDBPassword
+    changeOdooDBPassword,
+    startOdooDatabaseAgain
 }

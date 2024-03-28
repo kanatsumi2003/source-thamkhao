@@ -15,6 +15,7 @@ const axios = require('../../../utils/axiosUtil');
 async function activateModule(userId, dbname,
                                 lang, password, moduleId) {
 
+    // Check the company is existed and the user is authorized to perform this action
     const company = await isExistCompanyByDbName(dbname);
 
     const url = `https://${dbname}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
@@ -140,9 +141,67 @@ async function getAllModules(userId, dbName) {
     }
 }
 
+/**
+ * Get activated modules
+ * @param userId
+ * @param dbName
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
+ */
+async function getActivatedModules(userId, dbName) {
+
+    const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/activated_modules?dbname=${dbName}`;
+
+    const data = {
+        dbname: dbName
+    }
+    try {
+        const result = await axios.axiosGet(url, data, {});
+
+        return {
+            message: "Successfully get activated modules",
+            isSuccess: true,
+            data: result
+        };
+
+    } catch (error) {
+        throw new Error("Error at get activated modules: " + error.message);
+    }
+}
+
+/**
+ * Get unactivated modules
+ * @param userId
+ * @param dbName
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
+ */
+async function getUnactivatedModules(userId, dbName) {
+
+    const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/unactivated_modules?dbname=${dbName}`;
+
+    const data = {
+        dbname: dbName
+    }
+    try {
+        const result = await axios.axiosGet(url, data, {});
+
+        return {
+            message: "Successfully get unactivated modules",
+            isSuccess: true,
+            data: result
+        };
+
+    } catch (error) {
+        throw new Error("Error at get unactivated modules: " + error.message);
+    }
+}
+
 module.exports = {
     activateModule,
     deactivateModule,
     upgradeModule,
     getAllModules,
+    getActivatedModules,
+    getUnactivatedModules
 }
