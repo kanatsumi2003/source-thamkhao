@@ -7,7 +7,6 @@ const {isExistCompanyByDbName} = require("../companyService");
  * Get invoices from Odoo
  * @param userId
  * @param dbName
- * @param master_pwd
  * @param lang
  * @param password
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}

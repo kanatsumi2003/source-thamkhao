@@ -6,7 +6,6 @@ const axios = require('../../../utils/axiosUtil');
 /**
  * Activate Module
  * @param userId
- * @param master_pwd
  * @param dbname
  * @param lang
  * @param password
