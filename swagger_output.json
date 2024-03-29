@@ -357,9 +357,9 @@
           {
             "name": "body",
             "in": "body",
-            "schema":{
+            "schema": {
               "type": "object",
-              "properties":{
+              "properties": {
                 "name": {
                   "example": "any"
                 },
@@ -496,13 +496,13 @@
           {
             "name": "body",
             "in": "body",
-            "schema":{
+            "schema": {
               "type": "object",
-              "properties":{
+              "properties": {
                 "name": {
                   "example": "any"
                 },
-                "type":{
+                "type": {
                   "example": "any"
                 }
               }
@@ -612,13 +612,58 @@
         }
       }
     },
-    "/recreate-database": {
+    "/start-odoo-database-again": {
       "post": {
         "tags": [
           "OdooDatabase"
         ],
         "description": "Use to request all posts",
         "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "original_name": {
+                  "example": "any"
+                },
+                "new_name": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/recreate-database/{userId}": {
+      "post": {
+        "tags": [
+          "OdooDatabase"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "authorization",
             "in": "header",
@@ -637,6 +682,51 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/set-up-outgoing-mail": {
+      "post": {
+        "tags": [
+          "MailServer"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dbname": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "isDefault": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "500": {
             "description": "Internal Server Error"
@@ -790,6 +880,44 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/get-activate-odoo-module": {
+      "get": {
+        "tags": [
+          "OdooModule"
+        ],
+        "description": "Use to request all posts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/get-unactivated-odoo-module": {
+      "get": {
+        "tags": [
+          "OdooModule"
+        ],
+        "description": "Use to request all posts",
         "responses": {
           "200": {
             "description": "OK"

@@ -154,9 +154,67 @@ async function getAllModules(userId, dbName, moduleId) {
     }
 }
 
+/**
+ * Get activated modules
+ * @param userId
+ * @param dbName
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
+ */
+async function getActivatedModules(userId, dbName) {
+
+    const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/activated_modules?dbname=${dbName}`;
+
+    const data = {
+        dbname: dbName
+    }
+    try {
+        const result = await axios.axiosGet(url, data, {});
+
+        return {
+            message: "Successfully get activated modules",
+            isSuccess: true,
+            data: result
+        };
+
+    } catch (error) {
+        throw new Error("Error at get activated modules: " + error.message);
+    }
+}
+
+/**
+ * Get unactivated modules
+ * @param userId
+ * @param dbName
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
+ */
+async function getUnactivatedModules(userId, dbName) {
+
+    const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/unactivated_modules?dbname=${dbName}`;
+
+    const data = {
+        dbname: dbName
+    }
+    try {
+        const result = await axios.axiosGet(url, data, {});
+
+        return {
+            message: "Successfully get unactivated modules",
+            isSuccess: true,
+            data: result
+        };
+
+    } catch (error) {
+        throw new Error("Error at get unactivated modules: " + error.message);
+    }
+}
+
 module.exports = {
     activateModule,
     deactivateModule,
     upgradeModule,
     getAllModules,
+    getActivatedModules,
+    getUnactivatedModules
 }

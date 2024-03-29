@@ -41,7 +41,7 @@ async function createOdooAndDNS(msg) {
         );
         //kiem tra xem có record nào trùng hay không
         if (check != 0 && !check.error) {
-          postData.name = stringUtil.generateRandomDigits(company.domainName);
+          postData.name = stringUtil.generateSubdomain(company.companyName, company.emailCompany);
         }
         const recordReturnResult = await dnsService.createDnsRecord(
           ZONE_ID,

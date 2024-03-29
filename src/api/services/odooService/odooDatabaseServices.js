@@ -164,8 +164,42 @@ async function stopDatabase(userId, dbName, master_pwd,
     }
 }
 
+/**
+ * Start the database again
+ * @param originalName
+ * @param newName
+ * @param password
+ * @returns {Promise<{data: {success: string, message: string}, message: string}>}
+ */
+async function startDatabaseAgain(originalName, newName, password) {
+
+    try {
+
+        const url = `https://${originalName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/start`;
+
+        const data = {
+            original_name: originalName,
+            new_name: newName,
+            password: password
+        };
+
+        const { success, message } = await axios.axiosPost(url,
+            data, {});
+
+        return {
+           message: message,
+           isSuccess: success,
+           data: null
+        };
+
+    } catch (error) {
+        throw new Error("Error at start database again: " + error.message);
+    }
+}
+
 module.exports = {
     createOdooDatabase,
     duplicateOdooDatabase,
     stopDatabase,
+    startDatabaseAgain
 };

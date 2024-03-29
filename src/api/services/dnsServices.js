@@ -36,7 +36,13 @@ function validateName(name){
   const allowCharacters = /^[a-zA-Z0-9\s-]+$/; //chỉ cho phép ký tự thường, in hoa, số
   return allowCharacters.test(name);
 }
-
+/**
+ * 
+ * @param name 
+ * @param type
+ * @param content 
+ * @returns {Promise{data: *}}
+ */
 async function createDnsRecord(zone_id, postData) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
   const headers = {
@@ -71,6 +77,7 @@ async function createDnsRecord(zone_id, postData) {
     });
   return data;
 }
+
 
 async function findDnsRecordByName(zone_id, searchValue) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
@@ -121,6 +128,12 @@ async function deleteDnsRecord(zone_id, recordID) {
   return data;
 }
 
+/**
+ * 
+ * @param name 
+ * @param type 
+ * @returns {Promise<{data: *, message: string}>}
+ */
 async function updateDnsRecord(zone_id, recordID, updateData) {
     const url = `${DNS_RECORD_URL}/${zone_id}/dns_records/${recordID}` //cần đưa vào zone_id và recordID
     const headers = {

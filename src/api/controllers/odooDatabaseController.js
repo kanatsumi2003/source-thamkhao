@@ -54,6 +54,40 @@ async function stopOdooDatabase(req, res) {
   }
 }
 
+async function startOdooDatabaseAgain(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["OdooDatabase"]
+    try {
+        const {original_name, new_name, password} = req.body;
+        const {message, isSuccess, data} = await odooDatabaseService
+            .startDatabaseAgain(original_name, new_name, password);
+        if (isSuccess) {
+            res.status(201).json({message, data});
+        } else {
+            res.status(400).json({message, data});
+        }
+    } catch (error) {
+        res.status(500).json({message: "Error restart Odoo Database", error});
+    }
+}
+
+async function startOdooDatabaseAgain(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["OdooDatabase"]
+    try {
+        const {original_name, new_name, password} = req.body;
+        const {message, isSuccess, data} = await odooDatabaseService
+            .startDatabaseAgain(original_name, new_name, password);
+        if (isSuccess) {
+            res.status(201).json({message, data});
+        } else {
+            res.status(400).json({message, data});
+        }
+    } catch (error) {
+        res.status(500).json({message: "Error restart Odoo Database", error});
+    }
+}
+
 //api create odoo by userid (truyền userid) => tạo queue gắn userid
 //check xem userid này có company chưa => chưa thì ko có comp => returnm
 //có tạo queue
@@ -61,10 +95,10 @@ async function reCreateOdooDatabase(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["OdooDatabase"]
   try {
-    const userId = req.user.userId;
-    let company = await companyService.getCompanyInactiveByUserId(userId);
+    const userId = req.params.userId;
+    let company = await companyService.getCompanyInactiveByUserId(userId); //query công ty chưa được active để tạo lại db + dns record
     if (company == null) {
-      return res.status(400).json({ message: "This user own no company" });
+      return res.status(400).json({ message: "This user has no inactive company" });
     }
       const message = {
         userId: userId,
@@ -83,4 +117,5 @@ module.exports = {
   reCreateOdooDatabase,
   duplicateDatabases,
   stopOdooDatabase,
+    startOdooDatabaseAgain
 };

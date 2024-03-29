@@ -6,6 +6,7 @@ const { authenticateToken } = require('../../middleware/authMiddleware')
 
 router.post('/duplicate-odoo-database', odooDatabaseController.duplicateDatabases); //Duplicate an database on Odoo
 router.post('/stop-odoo-database', odooDatabaseController.stopOdooDatabase); //Stop the database on Odoo
+router.post('/start-odoo-database-again', odooDatabaseController.startOdooDatabaseAgain); //Start the database on Odoo
 // #swagger.security = [{ "apiKeyAuth": [] }]
-router.post('/recreate-database', authenticateToken, odooDatabaseController.reCreateOdooDatabase);
+router.post('/recreate-database/:userId', authenticateToken, odooDatabaseController.reCreateOdooDatabase);
 module.exports = router;
