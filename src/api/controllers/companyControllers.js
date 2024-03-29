@@ -1,4 +1,4 @@
-const companyModel = require("../../models/ProfileCompanyModel.js");
+const companyModel = require("../../models/profileCompanyModel");
 const stringUltil = require("../../utils/stringUtil");
 const companyService = require("../services/companyService");
 const path = require('path');

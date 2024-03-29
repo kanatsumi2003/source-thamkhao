@@ -135,7 +135,22 @@ async function getUserByEmail(email) {
         throw new Error('Error getting user by email: ' + error.message);
     }
 }
+async function getUserByEmailRegister(email) {
+    try {
+        console.log(email);
+        const query = { email: email, isDelete: false, isActive: true};
+        console.log(query);
+        const users = await mongoService.findDocuments(collectionName, query);
+        console.log(users);
 
+        if (users === null && users.length <= 0) {
+            return null;
+        }
+        return users[0];
+    } catch (error) {
+        throw new Error('Error getting user by email: ' + error.message);
+    }
+}
 async function getUserByUsername(username) {
     try {
         const query = { username: username.toLowerCase(), isDelete: false, isActive: true,emailConfirmed:true };
@@ -155,5 +170,6 @@ module.exports = {
     getUserByEmail,
     getUserByUsername,
     getUserByEmailAndUsername,
-    changePasswordUser
+    changePasswordUser,
+    getUserByEmailRegister
 };
