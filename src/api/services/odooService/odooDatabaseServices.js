@@ -22,16 +22,19 @@ async function createOdooDatabase(userId, dbName, lang,
                                   password, login, phone) {
     try {
         const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
-        const data = {
+        const postData = {
             name: dbName,
             lang: lang,
             password: password,
             login: login,
             phone: phone,
         };
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        const params = new URLSearchParams(postData).toString();
 
-        const result = await axios.axiosPost(url,
-            data, {});
+        const result = await axios.axiosPost(url, params, headers);
 
         return {
             message: "Database created",
@@ -39,7 +42,10 @@ async function createOdooDatabase(userId, dbName, lang,
             data: result
         };
     } catch (error) {
-        throw new Error("Error creating odoo database: " + error.message);
+        return {
+            error: error.message,
+            statusCode: error.status
+        }
     }
 }
 

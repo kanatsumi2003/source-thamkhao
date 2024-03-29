@@ -1,4 +1,6 @@
-const odooDatabaseService = require('../services/odooService/odooDatabaseServices');
+const odooDatabaseService = require("../services/odooService/odooDatabaseServices");
+const companyService = require("../services/companyService");
+const queue = require("../../utils/sendQueue");
 
 async function duplicateDatabases(req, res) {
     // #swagger.description = 'Use to request all posts'
@@ -93,10 +95,36 @@ async function startOdooDatabaseAgain(req, res) {
     }
 }
 
+//api create odoo by userid (truyền userid) => tạo queue gắn userid
+//check xem userid này có company chưa => chưa thì ko có comp => returnm
+//có tạo queue
+async function reCreateOdooDatabase(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const userId = req.params.userId;
+    let company = await companyService.getCompanyInactiveByUserId(userId); //query công ty chưa được active để tạo lại db + dns record
+    if (company == null) {
+      return res.status(400).json({ message: "This user has no inactive company" });
+    }
+      const message = {
+        userId: userId,
+        companyId: company._id,
+      };
+      let messageString = JSON.stringify(message);
+
+      await queue.sendToQueue("createOdooAndDNS", Buffer.from(messageString));
+      return res.status(200).json({ message: "Recreating" });
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 module.exports = {
     duplicateDatabases,
     stopOdooDatabase,
     changeOdooDBName,
     changeOdooDBPassword,
+    reCreateOdooDatabase,
     startOdooDatabaseAgain
 }

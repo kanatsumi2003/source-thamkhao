@@ -70,6 +70,7 @@ async function getAllCompanies() {
   }
 }
 
+
 /**
  * Get Company by Id
  * @param {string} companyId The id of the company to get
@@ -81,8 +82,31 @@ async function getCompanyById(companyId) {
   try {
     const query = {
       _id: new mongoose.Types.ObjectId(companyId),
-      isDelete: false,
       isActive: true,
+      isDelete: false,
+    };
+    const companies = await mongoService.findDocuments(collectionName, query);
+    if (companies !== null && companies.length > 0) {
+      return companies[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error("Error getting company by id: " + error.message);
+  }
+}
+/**
+ * Get Company by Id
+ * @param {string} companyId The id of the company to get
+ * @returns {Promise<CompanyProfile> || null || undefined} The company with the given id
+ * or null if the company does not exist
+ * @exception Error Create connect to db fail
+ */
+async function getCompanyByIdWithoutStatus(companyId) {
+  try {
+    const query = {
+      _id: new mongoose.Types.ObjectId(companyId),
+      isDelete: false,
     };
     const companies = await mongoService.findDocuments(collectionName, query);
     if (companies !== null && companies.length > 0) {
@@ -117,6 +141,34 @@ async function getCompanyByUserId(userId) {
   }
 }
 /**
+ * Gets a company by its ID from the database.
+ * @param {string} companyId - The ID of the company to retrieve.
+ * @returns {Object|null} The company object if found, or null if not.
+ */
+async function getCompanyInactiveByUserId(userId) {
+  try {
+    const query = {
+      userId: userId,
+      isDelete: false,
+      isActive: false,
+    };
+    const companies = await mongoService.findDocuments(collectionName, query);
+    if (companies !== null && companies.length > 0) {
+      return companies[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error("Error getting company by userid: " + error.message);
+  }
+}
+/**
+ * Gets a company by its ID from the database.
+ * @param {string} companyId - The ID of the company to retrieve.
+ * @returns {Object|null} The company object if found, or null if not.
+ */
+
+/**
  * Update Company by Id
  * @param {string} companyId The id of the company to update
  * @param {CompanyProfile} company The company to update
@@ -136,7 +188,39 @@ async function updateCompany(companyId, company) {
         { _id: new mongoose.Types.ObjectId(companyId) },
         company
       );
+    } else {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: companyId },
+        company
+      );
+    }
 
+    return true;
+  } catch (error) {
+    throw new Error("Error updating company: " + error.message);
+  }
+}
+/**
+ * Update Company by Id
+ * @param {string} companyId The id of the company to update
+ * @param {CompanyProfile} company The company to update
+ * @returns {Promise<boolean>} true if the company has been updated, false otherwise
+ * @exception Error Create connect to db fail
+ */
+async function updateInactiveCompany(companyId, company) {
+  try {
+    let oldCompany = await getCompanyByIdWithoutStatus(companyId);
+    if (oldCompany == null) {
+      return false;
+    }
+    company.updateTime = new Date();
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+      await mongoService.updateDocument(
+        collectionName,
+        { _id: new mongoose.Types.ObjectId(companyId) },
+        company
+      );
     } else {
       await mongoService.updateDocument(
         collectionName,
@@ -178,7 +262,7 @@ async function deleteCompany(companyId) {
  */
 async function getCompanyByDbName(dbName) {
   try {
-    const query = {dbName: dbName, isDelete: false, isActive: true};
+    const query = { dbName: dbName, isDelete: false, isActive: true };
     const company = await mongoService.findDocuments(collectionName, query);
 
     if (!company) {
@@ -186,14 +270,12 @@ async function getCompanyByDbName(dbName) {
     }
 
     return null;
-
   } catch (error) {
     throw new Error("Error getting company by dbName: " + error.message);
   }
 }
 
 async function isExistCompanyByDbName(userId, dbName) {
-
   const company = await getCompanyByDbName(dbName);
   if (!company) {
     throw new Error("Company not found");
@@ -207,14 +289,56 @@ async function isExistCompanyByDbName(userId, dbName) {
   return company;
 }
 
+/**
+ * Get Company by dbName
+ * @param dbName The dbName of the company to get
+ * @returns {Promise<*|null>}
+ */
+async function getCompanyByDbName(dbName) {
+  try {
+    const query = { dbName: dbName, isDelete: false, isActive: true };
+    const company = await mongoService.findDocuments(collectionName, query);
+
+    if (!company) {
+      return company[0];
+    }
+
+    return null;
+  } catch (error) {
+    throw new Error("Error getting company by dbName: " + error.message);
+  }
+}
+
+async function isExistCompanyByDbName(userId, dbName) {
+  const company = await getCompanyByDbName(dbName);
+  if (!company) {
+    throw new Error("Company not found");
+  }
+
+  // Check if the user is authorized to perform this action
+  if (company.userId !== userId) {
+    throw new Error("You are not authorized to perform this action.");
+  }
+
+  return company;
+}
+
+function validateCompanyName(name) {
+  const allowCharacters = /^[a-zA-Z0-9\s]+$/;
+  return allowCharacters.test(name);
+}
 module.exports = {
+  validateCompanyName,
   createCompany,
+  getCompanyInactiveByUserId,
+  getCompanyByIdWithoutStatus,
   getAllCompanies,
   isCompanyNameExist,
   getCompanyById,
   updateCompany,
+  updateInactiveCompany,
   deleteCompany,
   getCompanyByUserId,
   getCompanyByDbName,
-  isExistCompanyByDbName
+  isExistCompanyByDbName,
 };

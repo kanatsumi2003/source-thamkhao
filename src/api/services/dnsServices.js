@@ -8,6 +8,7 @@ require("dotenv").config();
 const CLOUD_FLARE_API = process.env.CLOUD_FLARE_API;
 const DNS_RECORD_URL = `${CLOUD_FLARE_API}/zones`;
 const CLOUD_FLARE_AUTH_TOKEN = process.env.TOKEN; //Token header
+const ROOT_ODOO_DOMAIN = process.env.ROOT_ODOO_DOMAIN;
 
 async function getAllDnsRecords(zone_id) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
@@ -31,15 +32,33 @@ async function getAllDnsRecords(zone_id) {
   return data;
 }
 
+function validateName(name){
+  const allowCharacters = /^[a-zA-Z0-9\s-]+$/; //chỉ cho phép ký tự thường, in hoa, số
+  return allowCharacters.test(name);
+}
+/**
+ * 
+ * @param name 
+ * @param type
+ * @param content 
+ * @returns {Promise{data: *}}
+ */
 async function createDnsRecord(zone_id, postData) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
   const headers = {
     Authorization: `Bearer ${CLOUD_FLARE_AUTH_TOKEN}`,
     "Content-Type": "application/json",
   };
+  const check = validateName(postData.name)
+  if(!validateName(postData.name)) { //record name ko được chứa ký tự đặc biệt
+    return {
+      error: "Name can not contain special characters",
+      statusCode: 400
+    }
+  }
   const _postData = {
     type: postData.type, //A, Cname, TXT
-    name: postData.name, //subdomain.domainname.com
+    name: postData.name.replace(/\s/g, ''), //subdomain.domainname.com  //loại bỏ các khoảng trắng
     content: postData.content, //ipv4 address (A), domainname (Cname)
   };
   const data = await axiosUtil
@@ -59,6 +78,7 @@ async function createDnsRecord(zone_id, postData) {
   return data;
 }
 
+
 async function findDnsRecordByName(zone_id, searchValue) {
   const url = `${DNS_RECORD_URL}/${zone_id}/dns_records`; //URL dns records
   const headers = {
@@ -66,12 +86,13 @@ async function findDnsRecordByName(zone_id, searchValue) {
     "Content-Type": "application/json",
   };
   const params = {
-    name: searchValue,
+    name: `${searchValue}.${ROOT_ODOO_DOMAIN}`,
   };
   const data = await axiosUtil
     .axiosSearch(url, params, headers)
     .then((response) => {
       const result = response.data.result;
+      if(result == null) return null;
       console.log(result.map((data) => new DnsRecord(data))); //Return ra giá trị dựa theo dnsRecordModel
       return result.map((data) => new DnsRecord(data));
     })
@@ -107,6 +128,12 @@ async function deleteDnsRecord(zone_id, recordID) {
   return data;
 }
 
+/**
+ * 
+ * @param name 
+ * @param type 
+ * @returns {Promise<{data: *, message: string}>}
+ */
 async function updateDnsRecord(zone_id, recordID, updateData) {
     const url = `${DNS_RECORD_URL}/${zone_id}/dns_records/${recordID}` //cần đưa vào zone_id và recordID
     const headers = {

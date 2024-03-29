@@ -9,10 +9,12 @@ async function sendToQueue(queueName, message) {
   channel.sendToQueue(queueName, Buffer.from(message)); // Gửi tin nhắn đến hàng đợi
 
   console.log(" [x] Sent %s", message);
-
-  setTimeout(() => {
-    connection.close(); // Đóng kết nối sau khi gửi tin nhắn
-    process.exit(0);
-  }, 500);
+  // setTimeout(() => {
+  //   connection.close(); // Đóng kết nối sau khi gửi tin nhắn
+  //   process.exit(0);
+  // }, 2500);
 }
 
+module.exports = {
+  sendToQueue,
+}
