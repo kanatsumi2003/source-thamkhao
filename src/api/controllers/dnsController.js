@@ -26,13 +26,17 @@ async function getListDnsRecord(req, res) {
 }
 
 //Tạo 1 record mới
-
 async function createDnsRecord(req, res) {
     try {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Record"]       
         const zone_id = req.params.zone_id
-        const recordData = req.body;
+        const {name, type, content } = req.body
+        let recordData = {
+            name: name,
+            type: type,
+            content: content
+        }
         const result = await dnsService.createDnsRecord(zone_id, recordData)
         if(result.error){
             const error = result;
@@ -91,7 +95,11 @@ async function updateDnsRecord(req, res) {
     try {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Record"]
-        const updateData = req.body
+        const { name, type } = req.body
+        let updateData = {
+            name: name,
+            type: type
+        }
         const recordID = req.params.id
         const zone_id = req.params.zone_id
         const result = await dnsService.updateDnsRecord(zone_id, recordID, updateData);

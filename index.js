@@ -3,6 +3,7 @@ const userRoutes = require('./src/api/routes/userRoutes.js');
 const roleRoutes = require('./src/api/routes/roleRoutes.js');
 const dnsRoutes = require('./src/api/routes/dnsRoutes.js');
 const companyRoutes = require('./src/api/routes/companyRoutes.js');
+const odooDatabaseRoutes = require('./src/api/routes/odooDatabaseRoutes.js');
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
 const cors = require('./src/middleware/corsMiddleware')
@@ -22,6 +23,7 @@ app.use('/api', dnsRoutes);
 app.use('/api',userRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', companyRoutes);
+app.use('/api', odooDatabaseRoutes);
 app.use('/public', express.static('public'));
 // Set up Swagger UI
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
