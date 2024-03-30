@@ -5,10 +5,10 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "localhost:3000/api",
+  "host": "api-dev.ezcount.vn/api",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "apiKeyAuth": {
@@ -538,9 +538,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "lang": {
                   "example": "any"
                 },
@@ -586,13 +583,76 @@
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "stringName": {
                   "example": "any"
                 },
                 "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/change-odoo-db-name": {
+      "post": {
+        "tags": [
+          "OdooDatabase"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newDbName": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/change-odoo-db-password": {
+      "post": {
+        "tags": [
+          "OdooDatabase"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newPassword": {
                   "example": "any"
                 }
               }
@@ -747,9 +807,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "lang": {
                   "example": "any"
                 },
@@ -789,9 +846,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "lang": {
                   "example": "any"
                 },
@@ -831,9 +885,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "lang": {
                   "example": "any"
                 },
@@ -861,25 +912,28 @@
       }
     },
     "/get-all-odoo-module": {
+      "get": {
+        "tags": [
+          "OdooModule"
+        ],
+        "description": "Use to request all posts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
       "post": {
         "tags": [
           "OdooModule"
         ],
         "description": "Use to request all posts",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "moduleId": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -932,28 +986,8 @@
       }
     },
     "/get-odoo-invoice": {
-      "post": {
+      "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
-                "lang": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -968,31 +1002,11 @@
       }
     },
     "/get-odoo-users-in-company": {
-      "post": {
+      "get": {
         "tags": [
           "OdooUser"
         ],
         "description": "Use to request all posts",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
-                "lang": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1007,31 +1021,11 @@
       }
     },
     "/get-odoo-user-role": {
-      "post": {
+      "get": {
         "tags": [
           "OdooUser"
         ],
         "description": "Use to request all posts",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
-                "lang": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1416,17 +1410,27 @@
     },
     "/users/upload-image-profile": {
       "post": {
-        "description": "",
+        "description": "Uploads a profile image for the user.",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Upload successful"
           },
           "400": {
             "description": "Bad Request"
