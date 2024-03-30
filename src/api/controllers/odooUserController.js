@@ -4,11 +4,10 @@ async function getOdooUser(req, res) {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["OdooUser"]
     try {
-        const {master_pwd, lang, password} = req.body;
         const userId = req.user.userId;
         const dbname = req.user.dbname;
         const {message, isSuccess, data} = await odooUserServices
-            .getOdooUserList(userId, dbname, master_pwd, lang, password);
+            .getOdooUserList(userId, dbname);
         if (isSuccess) {
             res.status(200).json({message, data});
         } else {
@@ -23,12 +22,11 @@ async function getOdooUserRole(req, res){
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["OdooUser"]
     try {
-        const {master_pwd, lang, password} = req.body;
         const userId = req.user.userId;
         const dbname = req.user.dbname;
 
         const {message, isSuccess, data} = await odooUserServices
-            .GetOdooRole(userId, dbname, master_pwd, lang, password);
+            .GetOdooRole(userId, dbname);
         if (isSuccess) {
             res.status(200).json({message, data});
         } else {

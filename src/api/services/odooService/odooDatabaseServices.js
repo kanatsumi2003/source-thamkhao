@@ -11,7 +11,6 @@ const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService"
 /**
  * Create a new Odoo database
  * @param userId the user id
- * @param master_pwd unknown need more information
  * @param dbName the database name
  * @param lang the language
  * @param password the database password
@@ -19,44 +18,16 @@ const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService"
  * @param phone phone number
  * @returns {Promise<{data: *, message: string}>}
  */
-// async function createOdooDatabase(userId, master_pwd, dbName, lang,
-//                                   password, login, phone) {
-//     try {
-
-//         const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
-
-//         const data = {
-//             master_pwd: master_pwd,
-//             name: dbName,
-//             lang: lang,
-//             password: password,
-//             login: login,
-//             phone: phone,
-//         };
-
-//         const result = await axios.axiosPost(url,
-//             data, {});
-
-//         return {
-//             message: "Database created",
-//             isSuccess: true,
-//             data: result
-//         };
-//     } catch (error) {
-//         throw new Error("Error creating odoo database: " + error.message);
-//     }
-// }
-async function createOdooDatabase(data) {
+async function createOdooDatabase(userId, dbName, lang,
+                                  password, login, phone) {
     try {
-
-        const url = `https://${data.name}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
-
+        const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
         const postData = {
-            name: data.name,
-            lang: data.lang,
-            password: data.password, 
-            login: data.login,
-            phone: data.phone,
+            name: dbName,
+            lang: lang,
+            password: password,
+            login: login,
+            phone: phone,
         };
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -81,7 +52,6 @@ async function createOdooDatabase(data) {
 /**
  * Duplicate an Odoo database
  * @param userId the user id
- * @param master_pwd unknown need more information
  * @param dbName the database name
  * @param lang the language
  * @param password the database password
@@ -90,7 +60,7 @@ async function createOdooDatabase(data) {
  * @param newDbName the new database name
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
-async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
+async function duplicateOdooDatabase(userId, dbName, lang,
                                      password, login, phone, newDbName) {
 
     await isExistCompanyByDbName(userId, dbName);
@@ -100,7 +70,6 @@ async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
         const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/duplicate`;
 
         const data = {
-            master_pwd: master_pwd,
             name: dbName,
             lang: lang,
             password: password,
@@ -127,12 +96,11 @@ async function duplicateOdooDatabase(userId, master_pwd, dbName, lang,
  * Stop an Odoo database
  * @param userId the user id
  * @param dbName the database name
- * @param master_pwd unknown need more information
  * @param stringName unknown need more information
  * @param password the database password
  * @returns {Promise<{data: *, message: string}>}
  */
-async function stopDatabase(userId, dbName, master_pwd,
+async function stopDatabase(userId, dbName,
                             stringName, password) {
 
     await isExistCompanyByDbName(userId, dbName);
@@ -142,7 +110,6 @@ async function stopDatabase(userId, dbName, master_pwd,
         const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/stop`;
 
         const data = {
-            master_pwd: master_pwd,
             name: dbName,
             stringName: stringName,
             password: password
@@ -152,11 +119,9 @@ async function stopDatabase(userId, dbName, master_pwd,
             data, {});
 
         return {
-            message: "Database duplicated",
-            data: {
-                success,
-                message
-            }
+            message: message,
+            isSuccess: success,
+            data: null
         };
 
     } catch (error) {
@@ -164,6 +129,52 @@ async function stopDatabase(userId, dbName, master_pwd,
     }
 }
 
+/**
+ * Change the name of an Odoo database
+ * @param {string} userId the user id
+ * @param {string} dbName the database name
+ * @param {string} newDbName the new database name
+ * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
+ */
+async function changeDBName(userId, dbName, newDbName) {
+    const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/change_name`;
+    try {
+        const data = {
+            name: dbName,
+            new_name: newDbName
+        };
+        const {success, message} = await axios.axiosPost(url, data, {
+            'API_KEY': company.apiKey
+        });
+        return {
+            message: message,
+            isSuccess: success,
+            data: null
+        };
+    } catch (e) {
+        throw new Error("Error changing odoo database name: " + e.message);
+    }
+}
+
+async function changeDBPassword(userId, dbName, password, newPassword) {
+    ///const company = await isExistCompanyByDbName(userId, dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/change_password`;
+    try {
+        const data = {
+            password: password,
+            new_password: newPassword
+        };
+        const {success, message} = await axios.axiosPost(url, data, {});
+        return {
+            message: message,
+            isSuccess: success,
+            data: null
+        };
+    } catch (e) {
+        throw new Error("Error changing odoo database password: " + e.message);
+    }
+}
 /**
  * Start the database again
  * @param originalName
@@ -201,5 +212,7 @@ module.exports = {
     createOdooDatabase,
     duplicateOdooDatabase,
     stopDatabase,
-    startDatabaseAgain
+    changeDBName,
+    changeDBPassword,
+    startDatabaseAgain,
 };

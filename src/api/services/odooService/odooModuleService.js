@@ -6,14 +6,13 @@ const axios = require('../../../utils/axiosUtil');
 /**
  * Activate Module
  * @param userId
- * @param master_pwd
  * @param dbname
  * @param lang
  * @param password
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string, isSuccess: boolean}>}
  */
-async function activateModule(userId, master_pwd, dbname,
+async function activateModule(userId, dbname,
                                 lang, password, moduleId) {
 
     // Check the company is existed and the user is authorized to perform this action
@@ -23,7 +22,6 @@ async function activateModule(userId, master_pwd, dbname,
 
     try {
         const data = {
-            master_pwd: master_pwd,
             name: dbname,
             lang: lang,
             password: password,
@@ -48,14 +46,13 @@ async function activateModule(userId, master_pwd, dbname,
 /**
  * Deactivate module
  * @param userId
- * @param master_pwd
  * @param dbName
  * @param lang
  * @param password
  * @param moduleId
  * @returns {Promise<{data: *, message: string}>}
  */
-async function deactivateModule(userId, master_pwd, dbName,
+async function deactivateModule(userId, dbName,
                                 lang, password, moduleId) {
 
     const company = await isExistCompanyByDbName(userId, dbName);
@@ -64,7 +61,6 @@ async function deactivateModule(userId, master_pwd, dbName,
 
     try {
         const data = {
-            master_pwd: master_pwd,
             dbname: dbName,
             lang: lang,
             password: password,
@@ -89,19 +85,17 @@ async function deactivateModule(userId, master_pwd, dbName,
 /**
  * Upgrade module data
  * @param userId
- * @param master_pwd
  * @param dbName
  * @param lang
  * @param password
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string}>}
  */
-async function upgradeModule(userId, master_pwd, dbName, lang, password, moduleId) {
+async function upgradeModule(userId, dbName, lang, password, moduleId) {
     const company = await isExistCompanyByDbName(userId, dbName);
     const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
     try {
         const data = {
-            master_pwd: master_pwd,
             dbname: dbName,
             lang: lang,
             password: password,
@@ -111,7 +105,6 @@ async function upgradeModule(userId, master_pwd, dbName, lang, password, moduleI
         const result = await axios.axiosPatch(url, data, {
             'API_KEY': company.apiKey
         });
-
         return {
             message: "Successfully upgrade module",
             isSuccess: true,
@@ -127,19 +120,14 @@ async function upgradeModule(userId, master_pwd, dbName, lang, password, moduleI
  * Get all modules via DBName
  * @param userId
  * @param dbName
- * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string}>}
  */
-async function getAllModules(userId, dbName, moduleId) {
+async function getAllModules(userId, dbName) {
     const company = await isExistCompanyByDbName(userId, dbName);
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
-
-    const data = {
-        dbname: dbName,
-        moduleId: moduleId
-    }
+    const params = `dbname=${dbName}`;
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules${params}`;
     try {
-        const result = await axios.axiosPost(url, data, {
+        const result = await axios.axiosGet(url, {
             'API_KEY': company.apiKey
         });
 
@@ -148,7 +136,6 @@ async function getAllModules(userId, dbName, moduleId) {
             isSuccess: true,
             data: result
         };
-
     } catch (error) {
         throw new Error("Error at deactivate module: " + error.message);
     }
