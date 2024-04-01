@@ -219,7 +219,7 @@ async function uploadImageCompany(req, res) {
   console.log("targetPath", targetPath);
 
   // Di chuyển file từ thư mục tạm thời vào thư mục đích
-  fs.rename(file.path, targetPath, async (err) => {
+  fs.copyFile(file.path, targetPath, async (err) => {
     if (err) {
       fs.unlink(file.path, () => {});
       return res.status(500).send({ message: "Could not process the file." });
