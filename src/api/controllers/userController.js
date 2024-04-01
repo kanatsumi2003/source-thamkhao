@@ -428,8 +428,8 @@ async function uploadImageProfile(req, res) {
     const file = req.file;
     const timeFolder = Date.now();
     const dirPath = '/public/uploads/' + req.user.userId + '/avatar/';
-    console.log("dirPath ", '../../../' + dirPath);
-    const baseDir = path.join(__dirname, '../../../' + dirPath);
+    console.log("dirPath ", '../../..' + dirPath);
+    const baseDir = path.join(__dirname, '../../..' + dirPath);
     console.log(baseDir);
     try {
         fs.mkdirSync(baseDir, { recursive: true });
@@ -446,6 +446,7 @@ async function uploadImageProfile(req, res) {
     // Di chuyển file từ thư mục tạm thời vào thư mục đích
     fs.rename(file.path, targetPath, async (err) => {
         if (err) {
+            console.log(err)
             fs.unlink(file.path, () => { });
             return res.status(500).send({ message: 'Could not process the file.' });
         }
