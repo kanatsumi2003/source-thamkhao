@@ -268,9 +268,12 @@
         }
       }
     },
-   "/users/upload-image-profile": {
+   "/companies/upload-image-company": {
       "post": {
-        "description": "Uploads a profile image for the user.",
+        "tags": [
+          "Companies"
+        ],
+        "description": "Use to request all posts",
         "consumes": ["multipart/form-data"],
         "parameters": [
           {
@@ -290,7 +293,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Upload successful"
+            "description": "OK"
           },
           "400": {
             "description": "Bad Request"
