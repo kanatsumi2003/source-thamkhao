@@ -268,22 +268,29 @@
         }
       }
     },
-    "/companies/upload-image-company": {
+   "/users/upload-image-profile": {
       "post": {
-        "tags": [
-          "Companies"
-        ],
-        "description": "Use to request all posts",
+        "description": "Uploads a profile image for the user.",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true,
+            "description": "Authorization token"
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Profile image to upload"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Upload successful"
           },
           "400": {
             "description": "Bad Request"
