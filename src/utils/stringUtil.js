@@ -13,22 +13,20 @@ async function stringToSlug(str) {
  * @param {string} email - The user's email address.
  * @returns {string} - The generated subdomain.
 */
-function generateSubdomain(companyName, email) {
+function generateSubdomain(companyName) {
     // Tách tên người dùng và phần domain từ email
     const username = companyName;
-    const domain = email;
+    const currentTimeStamp = Date.now().toString();
+
     // tạo hash digits
-    const digits = Math.floor(100000 + Math.random() * 900000).toString();
-    const digitsHash = crypto.createHash('sha256').update(digits).digest('hex');
-    const digitsShortHash = digitsHash.substring(0, 2);
     // Tạo hash SHA-256 từ phần domain
-    const hash = crypto.createHash('sha256').update(domain).digest('hex');
+    // const hash = crypto.createHash('sha256').update(domain).digest('hex');
 
     // Lấy 6 ký tự đầu tiên từ hash
-    const shortHash = hash.substring(0, 4);
+    // const shortHash = hash.substring(0, 4);
 
     // Kết hợp tên người dùng và hash + digits hash để tạo subdomain
-    const subdomain = `${username}-${shortHash}-${digitsShortHash}`;
+    const subdomain = `${username}-${currentTimeStamp}`;
     return subdomain;
 }
 // function generateRandomDigits(domainName) {
@@ -37,7 +35,16 @@ function generateSubdomain(companyName, email) {
 //     const shortHash = hash.substring(0, 5);
 //     return `${domainName}-${shortHash}`;
 // }
+
+function generatePassword() {
+    const digits = Math.floor(100000 + Math.random() * 900000).toString();
+    const hash = crypto.createHash('sha512').update(digits).digest('hex');
+    const shortHash = hash.substring(0, 10);
+    return shortHash;
+}
 module.exports = {
     // generateRandomDigits,
-    stringToSlug,generateSubdomain
+    generatePassword,
+    stringToSlug,
+    generateSubdomain
 };  

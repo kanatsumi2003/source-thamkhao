@@ -4,6 +4,8 @@ const roleRoutes = require('./src/api/routes/roleRoutes.js');
 const dnsRoutes = require('./src/api/routes/dnsRoutes.js');
 const companyRoutes = require('./src/api/routes/companyRoutes.js');
 const odooDatabaseRoutes = require('./src/api/routes/odooDatabaseRoutes.js');
+const odooModuleRoutes = require('./src/api/routes/odooModuleRoutes.js');
+
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_output.json')
 const cors = require('./src/middleware/corsMiddleware')
@@ -19,8 +21,9 @@ app.use(express.json());
 app.use(cors);
 
 app.use('/api', dnsRoutes);
+app.use('/api', odooModuleRoutes);
 // Set up your API routes
-app.use('/api',userRoutes);
+app.use('/api', userRoutes);
 app.use('/api', roleRoutes);
 app.use('/api', companyRoutes);
 app.use('/api', odooDatabaseRoutes);

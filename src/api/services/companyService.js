@@ -38,11 +38,6 @@ async function isCompanyNameExist(companyName) {
 async function createCompany(company) {
   try {
     console.log("CreateCompany(company)", company);
-    // let isCompanyNameExist = this.isCompanyNameExist(company.companyName);
-
-    // if (isCompanyNameExist) {
-    //   return null;
-    // }
 
     let fullCompany = new CompanyProfileWithBase(company);
     fullCompany.passwordAdmin = await hashPassword(company.passwordAdmin);
@@ -118,6 +113,7 @@ async function getCompanyByIdWithoutStatus(companyId) {
     throw new Error("Error getting company by id: " + error.message);
   }
 }
+
 /**
  * Gets a company by its ID from the database.
  * @param {string} companyId - The ID of the company to retrieve.
@@ -143,7 +139,7 @@ async function getCompanyByUserId(userId) {
 /**
  * Gets a company by its ID from the database.
  * @param {string} companyId - The ID of the company to retrieve.
- * @returns {Object|null} The company object if found, or null if not.
+ * @returns {Object || null} The company object if found, or null if not.
  */
 async function getCompanyInactiveByUserId(userId) {
   try {

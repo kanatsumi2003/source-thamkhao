@@ -15,6 +15,12 @@ async function createCompany(req, res) {
     console.log("hello");
     console.log(req.body.emailCompany);
     // const companyNameDomain = stringUltil.generateSubdomain(req.body.emailCompany);
+    
+    const isUserOwnedComapny = await companyService.getCompanyByUserId(req.user.userId)
+    const isUserOwnedInactiveComapny = await companyService.getCompanyInactiveByUserId(req.user.userId);
+    if(isUserOwnedComapny || isUserOwnedInactiveComapny)
+      throw new Error("This user has owned a company!");
+
     const check = companyService.validateCompanyName(req.body.companyName); //check company names ko được chứa ký tự đặc biệt
     if (!check)
       throw new Error("Company name must not contain special characters");
@@ -24,7 +30,6 @@ async function createCompany(req, res) {
     //tạo domain
     const companyNameDomain = stringUltil.generateSubdomain(
       companyName,
-      req.body.emailCompany
     );
 
     //add dns
@@ -59,7 +64,7 @@ async function createCompany(req, res) {
     fullcompany.isActive = false;
 
     console.log(fullcompany);
-
+    
     const result = await companyService.createCompany(fullcompany);
 
     
@@ -73,15 +78,15 @@ async function createCompany(req, res) {
     delete companyData.dbName;
     delete companyData.apiKey;
     
-    res.status(201).json({ message: "Company created", data: companyData });
     const message = {
       userPassword: req.body.passwordAdmin,
       userId: req.user.userId,
       companyId: result._id,
     };
-
     const messageString = JSON.stringify(message)
     await queue.sendToQueue("createOdooAndDNS", Buffer.from(messageString));
+    res.status(201).json({ message: "Company created", data: companyData });
+
   } catch (error) {
     res
       .status(500)
@@ -247,8 +252,8 @@ module.exports = {
   createCompany,
   getAllCompanies,
   getCompanyById,
+  getCompanyByUserId,
   updateCompany,
   deleteCompany,
   uploadImageCompany,
-  getCompanyByUserId,
 };

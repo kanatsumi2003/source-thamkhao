@@ -18,4 +18,6 @@ router.post(apienpoint + '/update-password-forgot', authenticateToken, userContr
 router.post(apienpoint + '/my-profile', authenticateToken, userController.myProfile);
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint+'/upload-image-profile', authenticateToken, upload.single('file'), userController.uploadImageProfile);
+
+router.post(apienpoint + '/demo', userController.sendmaildemo);
 module.exports = router;

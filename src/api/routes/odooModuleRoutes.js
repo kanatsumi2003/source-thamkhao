@@ -1,8 +1,10 @@
 const express = require('express');
 const odooModuleController = require('../controllers/odooModuleController');
 const router = express.Router();
+const { authenticateToken } = require('../../middleware/authMiddleware');
 
-router.post('/activate-odoo-module', odooModuleController.activateOdooModule); //Activate an module on the company
+// #swagger.security = [{ "apiKeyAuth": [] }]
+router.post('/activate-odoo-module', authenticateToken, odooModuleController.activateOdooModule); //Activate an module on the company
 router.delete('/deactivate-odoo-module', odooModuleController.deactivateOdooModule); //Deactivate an module on the company
 router.patch('/upgrade-odoo-module', odooModuleController.upgradeOdooModule); //Upgrade an module on the company
 router.post('/get-all-odoo-module', odooModuleController.getAllOdooModules); //Get all modules on the company

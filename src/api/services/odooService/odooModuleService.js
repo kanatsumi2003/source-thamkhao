@@ -6,14 +6,13 @@ const axios = require('../../../utils/axiosUtil');
 /**
  * Activate Module
  * @param userId
- * @param master_pwd
  * @param dbname
  * @param lang
  * @param password
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string, isSuccess: boolean}>}
  */
-async function activateModule(userId, master_pwd, dbname,
+async function activateModule(userId, dbname,
                                 lang, password, moduleId) {
 
     // Check the company is existed and the user is authorized to perform this action
@@ -23,7 +22,6 @@ async function activateModule(userId, master_pwd, dbname,
 
     try {
         const data = {
-            master_pwd: master_pwd,
             name: dbname,
             lang: lang,
             password: password,
@@ -101,7 +99,6 @@ async function upgradeModule(userId, master_pwd, dbName, lang, password, moduleI
     const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
     try {
         const data = {
-            master_pwd: master_pwd,
             dbname: dbName,
             lang: lang,
             password: password,

@@ -241,10 +241,7 @@
     },
     "/companies/get-company-by-user": {
       "post": {
-        "tags": [
-          "Companies"
-        ],
-        "description": "Use to request all posts",
+        "description": "",
         "parameters": [
           {
             "name": "authorization",
@@ -253,9 +250,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           },
@@ -742,14 +736,16 @@
         "description": "Use to request all posts",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
-                "master_pwd": {
-                  "example": "any"
-                },
                 "lang": {
                   "example": "any"
                 },
@@ -769,6 +765,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1442,6 +1444,36 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/demo": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }

@@ -1,7 +1,6 @@
 const odooDatabaseService = require("../services/odooService/odooDatabaseServices");
 const companyService = require("../services/companyService");
 const queue = require("../../utils/sendQueue");
-
 async function duplicateDatabases(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["OdooDatabase"]

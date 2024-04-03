@@ -10,8 +10,7 @@ async function sendToQueue(queueName, message) {
 
   console.log(" [x] Sent %s", message);
   // setTimeout(() => {
-  //   connection.close(); // Đóng kết nối sau khi gửi tin nhắn
-  //   process.exit(0);
+  //   //connection.close(); // Đóng kết nối sau khi gửi tin nhắn
   // }, 2500);
 }
 

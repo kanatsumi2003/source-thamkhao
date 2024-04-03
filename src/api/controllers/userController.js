@@ -213,7 +213,7 @@ async function sendmaildemo(req, res) {
         return res.status(401).json({ message: "Email không tồn tại" });
     }
     console.log(user);
-    await sendMail("truonglongkt12@gmail.com", "hello  world", user, "verifyEmailTemplate.ejs");
+    await sendMail(email, "hello  world", user, "verifyEmailTemplate.ejs");
     res.status(200).json({ message: "gửi mail thành công" });
 
 }

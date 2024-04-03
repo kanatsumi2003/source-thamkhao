@@ -2,12 +2,13 @@ const odooDatabaseService = require("../api/services/odooService/odooDatabaseSer
 const dnsService = require("../api/services/dnsServices");
 const companyService = require("../api/services/companyService");
 const stringUtil = require("../utils/stringUtil");
-
+const { sendMail } = require("./emailUtil");
 require("dotenv").config();
 
 const CONTENT_RECORD = process.env.CONTENT_RECORD;
 const ZONE_ID = process.env.ZONE_ID;
 const TYPE_RECORD = process.env.TYPE_RECORD;
+const ROOT_SERVER_DOMAIN_NAME = process.env.ROOT_SERVER_DOMAIN_NAME;
 const LANG = "us";
 
 
@@ -40,13 +41,15 @@ async function createOdooAndDNS(msg) {
           postData.name
         );
         //kiem tra xem có record nào trùng hay không
-        if (check != 0 && !check.error) {
-          postData.name = stringUtil.generateSubdomain(company.companyName, company.emailCompany);
+        if (check != (0)) {
+          postData.name = stringUtil.generateSubdomain(company.companyName);
         }
         const recordReturnResult = await dnsService.createDnsRecord(
           ZONE_ID,
           postData
         );
+        await new Promise(resolve => setTimeout(resolve, 5000)); //thread sleep 5s
+
         //neu domain exist => tao 1 domain mới => update dbname, domainname
         //nếu create dns (domain name mới != domain db cũ) success  = > update comapany dns name và dbname theo dns mới
         if (!recordReturnResult.error) {
@@ -54,24 +57,34 @@ async function createOdooAndDNS(msg) {
           company.dbName = company.domainName;
         } else throw new Error("Cannot create new record, error: ");
         //ra lỗi return về luôn
+        const odooDBPassword = stringUtil.generatePassword();
         const dbData = {
           name: company.dbName,
           lang: `${LANG}`,
-          password: message.userPassword,
+          password: odooDBPassword,
           login: company.emailCompany,
           phone: company.phoneNumber,
         };
-        const dbReturnResult = await odooDatabaseService.createOdooDatabase(
-          dbData
+        console.log("Create db")
+        const dbReturnResult =  await odooDatabaseService.createOdooDatabase(
+          dbData,
         );
         //nếu lỗi => xóa dns mới tạo
         if (dbReturnResult.error) {
+          console.log(dbReturnResult.error)
           let deleteValue = recordReturnResult.id;
           await dnsService.deleteDnsRecord(ZONE_ID, deleteValue);
         } else {
           company.isActive = true;
           company.apiKey = dbReturnResult.data.data.api_key;
           await companyService.updateInactiveCompany(company._id, company);
+          const mailData = {
+            domainName: `https://${company.domainName}.${ROOT_SERVER_DOMAIN_NAME}`,
+            companyName: company.companyName,
+            login: company.emailCompany,
+            password: odooDBPassword,
+          }
+          await sendMail(company.emailCompany, "Create company notification", mailData, "createCompanySuccessTemplate.ejs")
         }
         //nếu create db odoo thành công => update company isactive = true
       } catch (error) {
