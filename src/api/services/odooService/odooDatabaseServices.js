@@ -18,16 +18,15 @@ const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService"
  * @param phone phone number
  * @returns {Promise<{data: *, message: string}>}
  */
-async function createOdooDatabase(userId, dbName, lang,
-                                  password, login, phone) {
+async function createOdooDatabase(data) {
     try {
-        const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
+        const url = `https://${data.name}.${process.env.ROOT_ODOO_DOMAIN}/web/database/create`;
         const postData = {
-            name: dbName,
-            lang: lang,
-            password: password,
-            login: login,
-            phone: phone,
+            name: data.name,
+            lang: data.lang,
+            password: data.password,
+            login: data.login,
+            phone: data.phone,
         };
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
