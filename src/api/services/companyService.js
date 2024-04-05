@@ -245,6 +245,7 @@ async function deleteCompany(companyId) {
     }
     company.isDelete = true;
     company.updateTime = new Date();
+    companyId = new mongoose.Types.ObjectId(companyId)
     return await updateCompany(companyId, company);
   } catch (error) {
     throw new Error("Error deleting company: " + error.message);
@@ -253,7 +254,7 @@ async function deleteCompany(companyId) {
 
 /**
  * Get Company by dbName
- * @param dbName The dbName of the company to get
+ * @param {string} dbName The dbName of the company to get
  * @returns {Promise<*|null>}
  */
 async function getCompanyByDbName(dbName) {
@@ -261,7 +262,7 @@ async function getCompanyByDbName(dbName) {
     const query = { dbName: dbName, isDelete: false, isActive: true };
     const company = await mongoService.findDocuments(collectionName, query);
 
-    if (!company) {
+    if (company) {
       return company[0];
     }
 
@@ -271,51 +272,11 @@ async function getCompanyByDbName(dbName) {
   }
 }
 
-async function isExistCompanyByDbName(userId, dbName) {
+async function isExistCompanyByDbName(dbName) {
   const company = await getCompanyByDbName(dbName);
   if (!company) {
     throw new Error("Company not found");
   }
-
-  // Check if the user is authorized to perform this action
-  if (company.userId !== userId) {
-    throw new Error("You are not authorized to perform this action.");
-  }
-
-  return company;
-}
-
-/**
- * Get Company by dbName
- * @param dbName The dbName of the company to get
- * @returns {Promise<*|null>}
- */
-async function getCompanyByDbName(dbName) {
-  try {
-    const query = { dbName: dbName, isDelete: false, isActive: true };
-    const company = await mongoService.findDocuments(collectionName, query);
-
-    if (!company) {
-      return company[0];
-    }
-
-    return null;
-  } catch (error) {
-    throw new Error("Error getting company by dbName: " + error.message);
-  }
-}
-
-async function isExistCompanyByDbName(userId, dbName) {
-  const company = await getCompanyByDbName(dbName);
-  if (!company) {
-    throw new Error("Company not found");
-  }
-
-  // Check if the user is authorized to perform this action
-  if (company.userId !== userId) {
-    throw new Error("You are not authorized to perform this action.");
-  }
-
   return company;
 }
 

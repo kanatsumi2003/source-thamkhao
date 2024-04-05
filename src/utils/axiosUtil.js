@@ -6,12 +6,18 @@ async function axiosGet(url, headers) { //get
   });
   return response;
 }
+async function axiosGetWithData(url, params, headers) {
+  const response = await axios.get(url, {
+    headers: headers,
+    params: params,
+  });
+  return response;
+}
 async function axiosPost(url, postData, headers) { //post
     const response = await axios.post(url, postData, {
         headers: headers,
     });
     return response;
-    
   } 
   
 async function axiosSearch(url, params, headers) { //search
@@ -29,9 +35,18 @@ async function axiosDelete(url, headers) { //delete
     return response;
 }
 
-async function axiosPatch(url, updateData, headers) { //patch
-    const response = await axios.patch(url, updateData, {
+async function axiosDeleteWithData(url, params, headers) { //delete
+    const response = await axios.delete(url, {
         headers: headers,
+        params: params,
+    });
+    return response;
+}
+
+async function axiosPatch(url, patchData, headers, params) { //patch
+    const response = await axios.patch(url, patchData, {
+        headers: headers,
+        params: params,
     });
     return response;
 }
@@ -42,4 +57,6 @@ module.exports = {
   axiosPost,
   axiosDelete,
   axiosPatch,
+  axiosDeleteWithData,
+  axiosGetWithData
 };

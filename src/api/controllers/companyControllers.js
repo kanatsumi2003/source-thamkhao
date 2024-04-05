@@ -112,7 +112,7 @@ async function getCompanyById(req, res) {
   // #swagger.tags = ["Companies"]
   try {
     const status = req.status
-    const company = await companyService.getCompanyById(req.id, status);
+    const company = await companyService.getCompanyById(req.params.id, status);
     const companyData = { ...company };
     delete companyData.passwordAdmin;
     delete companyData.dbName;
@@ -144,7 +144,10 @@ async function updateCompany(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
-    const { companyId } = req.params; // Giả sử bạn lấy ID công ty từ tham số đường dẫn
+    // const { companyId } = req.myCompany; // Giả sử bạn lấy ID công ty từ tham số đường dẫn
+    const userId = req.user.userId
+    const result = await companyService.getCompanyByUserId(userId)
+    let companyId = result._id
     const {
       companyName,
       address,
@@ -155,7 +158,7 @@ async function updateCompany(req, res) {
       countryCode,
     } = req.body;
     const status = true;
-    let updateCompany = companyService.getCompanyById(companyId, status);
+    let updateCompany = await companyService.getCompanyById(companyId, status);
     if (!updateCompany) {
       return res.status(404).json({ message: "Company not found" });
     }
@@ -178,7 +181,7 @@ async function updateCompany(req, res) {
       updateCompany._id,
       updateCompany
     );
-    res.status(200).json(updatedCompany);
+    res.status(200).json(updateCompany);
   } catch (error) {
     res.status(500).json({ message: "Error updating company", error });
   }
@@ -188,7 +191,7 @@ async function deleteCompany(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
-    const company = await companyService.deleteCompany(req.id);
+    const company = await companyService.deleteCompany(req.params.id);
     res.status(200).json(company);
   } catch (error) {
     res.status(500).json({ message: "Error deleting company", error });
