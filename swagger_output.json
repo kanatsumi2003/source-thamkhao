@@ -1015,18 +1015,31 @@
         }
       }
     },
-    "/get-odoo-users-in-company": {
+    "/get-odoo-users-in-company/{dbName}": {
       "get": {
         "tags": [
           "OdooUser"
         ],
         "description": "Use to request all posts",
-        "responses": {
-          "200": {
-            "description": "OK"
+        "parameters": [
+          {
+            "name": "dbName",
+            "in": "path",
+            "required": true,
+            "type": "string"
           },
-          "400": {
-            "description": "Bad Request"
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1034,18 +1047,31 @@
         }
       }
     },
-    "/get-odoo-user-role": {
+    "/get-odoo-user-role/{dbName}": {
       "get": {
         "tags": [
           "OdooUser"
         ],
         "description": "Use to request all posts",
-        "responses": {
-          "200": {
-            "description": "OK"
+        "parameters": [
+          {
+            "name": "dbName",
+            "in": "path",
+            "required": true,
+            "type": "string"
           },
-          "400": {
-            "description": "Bad Request"
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"

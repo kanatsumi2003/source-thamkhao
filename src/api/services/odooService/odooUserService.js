@@ -1,33 +1,47 @@
 //các apoi gọi tới odoo liên quan user;
 
-const {getCompanyByDbName, isExistCompanyByDbName} = require("../companyService");
+const {
+  getCompanyByDbName,
+  isExistCompanyByDbName,
+} = require("../companyService");
 const axios = require("../../../utils/axiosUtil");
-
+const stringUtil = require("../../../utils/stringUtil");
 /**
  * Get users from Odoo
- * @param userId
  * @param dbName
  * @returns {Promise<{data: *, message: string}>}
  */
-async function getOdooUserList(userId, dbName) {
+async function getOdooUserList(data) {
+  try {
+    const { dbName } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/users`;
 
-    const company = await isExistCompanyByDbName(userId, dbName);
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    const params = `?dbname=${dbName}`;
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/users${params}`;
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
 
-    try {
-        const result = await axios.axiosGet(url, {
-            'API_KEY': company.apiKey
-        });
-        return {
-            message: "Successfully get users",
-            data: result
-        };
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
 
-    } catch (error) {
-        throw new Error("Error at getting users: " + error.message);
-    }
+    return {
+      responseData: result.data,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
@@ -36,26 +50,40 @@ async function getOdooUserList(userId, dbName) {
  * @param dbName
  * @returns {Promise<{data: *, message: string}>}
  */
-async function GetOdooRole(userId, dbName) {
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const params = `?dbname=${dbName}`;
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/roles${params}`;
-    try {
-        const result = await axios.axiosGet(url, {
-            'API_KEY': company.apiKey
-        });
+async function GetOdooRole(data) {
+  try {
+    const { dbName } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/roles`;
 
-        return {
-            message: "Successfully get roles",
-            data: result
-        };
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    } catch (error) {
-        throw new Error("Error at getting role: " + error.message);
-    }
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+
+    return {
+      responseData: result.data,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 module.exports = {
-    getOdooUserList,
-    GetOdooRole
-}
+  getOdooUserList,
+  GetOdooRole,
+};
