@@ -122,7 +122,7 @@ async function getCompanyByIdWithoutStatus(companyId) {
  */
 async function getCompanyByUserId(data) {
   try {
-    const userId = data;
+    const {userId} = data;
     const query = {
       userId: userId,
       isDelete: false,
