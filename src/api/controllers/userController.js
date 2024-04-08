@@ -428,8 +428,8 @@ async function uploadImageProfile(req, res) {
     const file = req.file;
     const timeFolder = Date.now();
     const dirPath = '/public/uploads/' + req.user.userId + '/avatar/';
-    console.log("dirPath ", '../../../' + dirPath);
-    const baseDir = path.join(__dirname, '../../../' + dirPath);
+    console.log("dirPath ", '../../..' + dirPath);
+    const baseDir = path.join(__dirname, '../../..' + dirPath);
     console.log(baseDir);
     try {
         fs.mkdirSync(baseDir, { recursive: true });
@@ -444,8 +444,9 @@ async function uploadImageProfile(req, res) {
     console.log('targetPath', targetPath);
 
     // Di chuyển file từ thư mục tạm thời vào thư mục đích
-    fs.rename(file.path, targetPath, async (err) => {
+    fs.copyFile(file.path, targetPath, async (err) => {
         if (err) {
+            console.log(err)
             fs.unlink(file.path, () => { });
             return res.status(500).send({ message: 'Could not process the file.' });
         }
@@ -465,6 +466,28 @@ async function uploadImageProfile(req, res) {
             , user);
         res.status(200).json({ message: 'Image uploaded successfully.', imagePath: imagePath });
     });
+    // fs.rename(file.path, targetPath, async (err) => {
+    //     if (err) {
+    //         console.log(err)
+    //         fs.unlink(file.path, () => { });
+    //         return res.status(500).send({ message: 'Could not process the file.' });
+    //     }
+
+    //     const email = req.user.email;
+    //     let user = await userService.getUserByEmail(email);
+
+    //     if (!user) {
+    //         return res.status(404).send({ message: 'User not found.' });
+    //     }
+
+    //     // Lưu đường dẫn của file mới vào cơ sở dữ liệu, lưu ý rằng bạn nên lưu đường dẫn tương đối thay vì đường dẫn tuyệt đối
+    //     const imagePath = `${dirPath}${newFileName}`;
+    //     // await userService.updateUserProfileImage(user._id, imagePath);
+    //     user.imagePath = imagePath;
+    //     await userService.updateUser(user._id
+    //         , user);
+    //     res.status(200).json({ message: 'Image uploaded successfully.', imagePath: imagePath });
+    // });
 }
 module.exports = {
     createUser,
