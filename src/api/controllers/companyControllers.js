@@ -145,8 +145,10 @@ async function updateCompany(req, res) {
   // #swagger.tags = ["Companies"]
   try {
     // const { companyId } = req.myCompany; // Giả sử bạn lấy ID công ty từ tham số đường dẫn
-    const userId = req.user.userId
-    const result = await companyService.getCompanyByUserId(userId)
+    const data = {
+      userId: req.user.userId,
+    }
+    const result = await companyService.getCompanyByUserId(data)
     let companyId = result._id
     const {
       companyName,
