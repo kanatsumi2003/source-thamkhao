@@ -1,8 +1,8 @@
 //các hàm liên quan report
 
 const axios = require("../../../utils/axiosUtil");
-const {isExistCompanyByDbName} = require("../companyService");
-
+const { isExistCompanyByDbName } = require("../companyService");
+const stringUtil = require("../../../utils/stringUtil");
 /**
  * Get invoices from Odoo
  * @param userId
@@ -11,30 +11,38 @@ const {isExistCompanyByDbName} = require("../companyService");
  * @param password
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
-async function getOdooInvoice(userId, dbName,
-                               lang, password) {
+async function getOdooInvoice(data) {
+  try {
+    const dbName = data.dbName;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/invoices`;
 
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const params = `?dbname=${dbName}&lang=${lang}&password=${password}`;
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/invoices${params}`;
-    try {
-        const result = await axios.axiosPost(url, data, {
-            'API_KEY': company.apiKey
-        });
+    let hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
+    
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
 
-        return {
-            message: "Successfully get invoices",
-            isSuccess: true,
-            data: result
-        };
-
-    } catch (error) {
-        throw new Error("Error at getting invoices: " + error.message);
-    }
-
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+    return {
+      status: result.status,
+      responseData: result.data,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
-
 
 module.exports = {
-    getOdooInvoice
-}
+  getOdooInvoice,
+};

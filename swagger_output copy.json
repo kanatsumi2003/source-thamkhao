@@ -725,6 +725,9 @@
     },
     "/users/upload-image-profile": {
       "post": {
+        "tags": [
+          "Users"
+        ],
         "description": "Uploads a profile image for the user.",
         "consumes": ["multipart/form-data"],
         "parameters": [

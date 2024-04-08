@@ -5,15 +5,13 @@ async function duplicateDatabases(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["OdooDatabase"]
   try {
-    const data = {
+    const message = { 
       dbName: req.params.dbName,
       newDbName: req.body.newDbName,
     };
-    const { message, isSuccess } =
-      await odooDatabaseService.duplicateOdooDatabase(data);
-    if (isSuccess) {
-      res.status(200).json({ message });
-    }
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("duplicateDatabase", Buffer.from(messageString));
+    res.status(200).json("Duplicating");
   } catch (error) {
     res.status(500).json({
       message: "Error duplicating Odoo Database",
@@ -26,13 +24,12 @@ async function stopOdooDatabase(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["OdooDatabase"]
   try {
-    const data = {
+    const message = { 
       dbName: req.params.dbName,
     };
-    const { message, isSuccess } = await odooDatabaseService.stopDatabase(data);
-    if (isSuccess) {
-      res.status(200).json({ message });
-    }
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("stopDatabase", Buffer.from(messageString));
+    res.status(200).json("Stopping");
   } catch (error) {
     res.status(500).json({ message: "Error stopping Odoo Database", error });
   }
@@ -84,17 +81,12 @@ async function startOdooDatabaseAgain(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["OdooDatabase"]
   try {
-    const data = {
+    const message = { 
       dbName: req.params.dbName,
     };
-    const { message, isSuccess } = await odooDatabaseService.startDatabaseAgain(
-      data
-    );
-    if (isSuccess) {
-      res.status(200).json({ message });
-    } else {
-      res.status(400).json({ message });
-    }
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("startOdooDatabaseAgain", Buffer.from(messageString));
+    res.status(200).json("Restoring");
   } catch (error) {
     res.status(500).json({ message: "Error restart Odoo Database", error });
   }

@@ -418,6 +418,8 @@ async function myProfile(req, res) {
  *         description: Internal server error
  */
 async function uploadImageProfile(req, res) {
+    // #swagger.description = 'Use to request all posts'
+    // #swagger.tags = ["Users"]
     console.log(req.user);
     // Kiểm tra xem có file được upload không
     if (!req.file) {

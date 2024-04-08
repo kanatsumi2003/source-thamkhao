@@ -5,7 +5,7 @@
     "description": "API Documentation",
     "version": "1.0.0"
   },
-  "host": "api-dev.ezcount.vn/api",
+  "host": "api-dev.ezinvoice.cc/api",
   "basePath": "/",
   "schemes": [
     "https"
@@ -683,9 +683,6 @@
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
           },
@@ -813,6 +810,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -857,6 +857,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -901,6 +904,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1009,15 +1015,31 @@
         }
       }
     },
-    "/get-odoo-invoice": {
+    "/get-odoo-invoice/{dbName}": {
       "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
+        "tags": [
+          "Invoices"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "dbName",
+            "in": "path",
+            "required": true,
+            "type": "string"
           },
-          "400": {
-            "description": "Bad Request"
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1460,7 +1482,11 @@
     },
     "/users/upload-image-profile": {
       "post": {
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Uploads a profile image for the user.",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
