@@ -1,5 +1,6 @@
-const {Subcription} = require("../../models/subcriptionModel");
+const {Subscription} = require("../../models/subcriptionModel");
 const subscriptionServices = require("../services/subcriptionService")
+const transactionServices = require("../services/transactionService")
 
 async function createSubscription(req, res) {
     //  #swagger.description = 'Use to create subscription'
@@ -13,6 +14,30 @@ async function createSubscription(req, res) {
         console.log(addedSubs);
         //TODO
         // Create Transaction
+        let startDate = new Date();
+        let endDate;
+        if(req.isMonthly === true){
+            endDate = new Date(startDate.setMonth(startDate.getMonth()+1));
+        } else {
+            endDate = new Date(startDate.setFullYear(startDate.getFullYear()+1));
+        }
+
+        const transaction = transactionServices.createTransaction({
+            userId: req.userId,
+            subcriptionId: addedSubs._id.toString(),
+            companyId: req.User.companyId,
+            amount: 0,
+            startDate: startDate,
+            endDate: endDate,
+            isMonthly: true,
+            response_data: {},
+            gateway: '',
+            status: '',
+            note: '',
+            phone: req.phone,
+            username: req.username,
+            companyName: req.companyName
+        })
 
         res.status(201).json({message: 'Create Subscription success', data: addedSubs});
 
@@ -76,7 +101,7 @@ const getSubscriptionFromRequest = (req) => {
         total
     } = req.body;
 
-    return new Subcription(
+    return new Subscription(
         name,
         dbName,
         domainName,

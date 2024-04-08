@@ -489,6 +489,132 @@ paths:
           description: Unauthorized
         "500":
           description: Internal server error
+  /subscriptions:
+    post:
+      summary: Create Subscription
+      description: Use to create subscription
+      tags: [ Subscriptions ]
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: subscription
+          description: Subscription object that needs to be added
+          required: true
+          schema:
+            $ref: '#/definitions/Subscription'
+      responses:
+        '201':
+          description: Subscription created successfully
+          schema:
+            $ref: '#/definitions/Subscription'
+        '500':
+          description: Error at creating subscription
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: Update Subscription
+      description: Use to update subscription
+      tags: [ Subscriptions ]
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: subscription
+          description: Subscription object that needs to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/Subscription'
+      responses:
+        '200':
+          description: Subscription updated successfully
+          schema:
+            $ref: '#/definitions/SuccessMessage'
+        '404':
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+        '500':
+          description: Error at update subscription
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete Subscription
+      description: Use to delete subscription
+      tags: [ Subscriptions ]
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: id
+          description: ID of the subscription to delete
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Subscription deleted successfully
+          schema:
+            $ref: '#/definitions/SuccessMessage'
+        '404':
+          description: Subscription not found
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+        '500':
+          description: Error at delete subscription
+          schema:
+            $ref: '#/definitions/Error'
+  /transactions/{id}:
+    get:
+      summary: Get Transaction by ID
+      description: Use to get transaction by ID
+      tags: [ Transactions ]
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          description: ID of the transaction to retrieve
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Transaction retrieved successfully
+          schema:
+            $ref: '#/definitions/Transaction'
+        '404':
+          description: Transaction not found
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+        '500':
+          description: Error at getting transaction
+          schema:
+            $ref: '#/definitions/Error'
+  /transactions/user/{id}:
+      get:
+        summary: Get Transactions by User ID
+        description: Use to get transactions by user ID
+        tags: [ Transactions ]
+        produces:
+          - application/json
+        parameters:
+          - in: path
+            name: id
+            description: ID of the user whose transactions to retrieve
+            required: true
+            type: string
+        responses:
+          '200':
+            description: Transactions retrieved successfully
+            schema:
+              $ref: '#/definitions/TransactionList'
+          '404':
+            description: Transactions not found
+            schema:
+              $ref: '#/definitions/ErrorMessage'
+          '500':
+            description: Error at getting transactions
+            schema:
+              $ref: '#/definitions/Error'
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -565,3 +691,88 @@ definitions:
     properties:
       id:
         type: string
+  Subscription:
+    type: object
+    properties:
+      name:
+        type: string
+      domainName:
+        type: string
+      total_invoices:
+        type: integer
+      total_storage:
+        type: integer
+      image:
+        type: string
+      description:
+        type: string
+      monthly_prices:
+        type: array
+        items:
+          type: number
+      yearly_prices:
+        type: array
+        items:
+          type: number
+      total:
+        type: number
+  Transaction:
+    type: object
+    properties:
+      _id:
+        type: string
+      userId:
+        type: string
+      subcriptionId:
+        type: string
+      companyId:
+        type: string
+      amount:
+        type: number
+      startDate:
+        type: string
+        format: date-time
+      endDate:
+        type: string
+        format: date-time
+      isMonthly:
+        type: boolean
+      response_data:
+        type: object
+      gateway:
+        type: string
+      status:
+        type: string
+      note:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+      companyName:
+        type: string
+  TransactionList:
+      type: array
+      items:
+        $ref: '#/definitions/Transaction'
+  SuccessMessage:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+  ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: string
+  Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
