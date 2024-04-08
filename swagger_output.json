@@ -262,7 +262,7 @@
         }
       }
     },
-    "/companies/upload-image-company": {
+   "/companies/upload-image-company": {
       "post": {
         "tags": [
           "Companies"
@@ -660,7 +660,73 @@
         }
       }
     },
-    "/start-odoo-database-again/{dbName}": {
+    "/change-odoo-db-name": {
+      "post": {
+        "tags": [
+          "OdooDatabase"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newDbName": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/change-odoo-db-password": {
+      "post": {
+        "tags": [
+          "OdooDatabase"
+        ],
+        "description": "Use to request all posts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "newPassword": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/start-odoo-database-again": {
       "post": {
         "tags": [
           "OdooDatabase"
@@ -913,6 +979,7 @@
         }
       }
     },
+
     "/get-all-odoo-module/{dbName}": {
       "get": {
         "tags": [
@@ -930,8 +997,23 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
+        }
+      },
+      "post": {
+        "tags": [
+          "OdooModule"
         ],
+        "description": "Use to request all posts",
         "responses": {
           "401": {
             "description": "Unauthorized"
@@ -1460,7 +1542,8 @@
     },
     "/users/upload-image-profile": {
       "post": {
-        "description": "",
+        "description": "Uploads a profile image for the user.",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "authorization",
