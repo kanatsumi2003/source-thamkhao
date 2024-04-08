@@ -127,10 +127,10 @@ async function getCompanyByUserId(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
-    console.log("sss");
-    console.log(req.user);
-    const status = req.status
-    const company = await companyService.getCompanyByUserId(req.user.userId, status);
+    const data = {
+      userId: req.user.userId,
+    };
+    const company = await companyService.getCompanyByUserId(data);
     const companyData = { ...company };
     delete companyData.passwordAdmin;
     delete companyData.dbName;

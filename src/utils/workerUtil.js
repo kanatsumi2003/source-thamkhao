@@ -48,7 +48,7 @@ async function createOdooAndDNS(msg) {
           ZONE_ID,
           postData
         );
-        await new Promise(resolve => setTimeout(resolve, 5000)); //thread sleep 5s
+        await new Promise(resolve => setTimeout(resolve, 10000)); //thread sleep 5s
 
         //neu domain exist => tao 1 domain mới => update dbname, domainname
         //nếu create dns (domain name mới != domain db cũ) success  = > update comapany dns name và dbname theo dns mới

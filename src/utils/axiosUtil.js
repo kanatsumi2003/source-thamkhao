@@ -19,7 +19,7 @@ async function axiosPost(url, postData, headers) { //post
     });
     return response;
   } 
-  
+
 async function axiosSearch(url, params, headers) { //search
     const response = await axios.get(url, {
         headers: headers,
@@ -58,5 +58,5 @@ module.exports = {
   axiosDelete,
   axiosPatch,
   axiosDeleteWithData,
-  axiosGetWithData
+  axiosGetWithData,
 };

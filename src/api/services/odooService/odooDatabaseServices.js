@@ -43,9 +43,8 @@ async function createOdooDatabase(data) {
     const headers = {
       "Content-Type": "application/x-www-form-urlencoded",
     };
-    const params = new URLSearchParams(postData).toString();
 
-    const result = await axios.axiosPost(url, params, headers);
+    const result = await axios.axiosPost(url, postData, headers);
 
     return {
       message: "Database created",

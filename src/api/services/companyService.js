@@ -115,12 +115,14 @@ async function getCompanyByIdWithoutStatus(companyId) {
 }
 
 /**
- * Gets a company by its ID from the database.
- * @param {string} companyId - The ID of the company to retrieve.
- * @returns {Object|null} The company object if found, or null if not.
+ * 
+ * @param {string} userId 
+ * @returns {Promise<CompanyProfile>}
+ * @exception
  */
-async function getCompanyByUserId(userId) {
+async function getCompanyByUserId(data) {
   try {
+    const {userId} = data;
     const query = {
       userId: userId,
       isDelete: false,
