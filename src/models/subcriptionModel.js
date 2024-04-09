@@ -25,6 +25,6 @@ class SubCriptionWithBase extends BaseModel {
 }
 
 module.exports = {
-    Subcription, 
+    Subscription: Subcription,
     SubCriptionWithBase,
 }

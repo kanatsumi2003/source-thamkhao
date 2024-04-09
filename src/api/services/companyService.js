@@ -176,7 +176,7 @@ async function getCompanyInactiveByUserId(userId) {
 async function updateCompany(companyId, company) {
   try {
     let oldCompany = await getCompanyById(companyId);
-    if (oldCompany == null) {
+    if (oldCompany === null) {
       return false;
     }
     company.updateTime = new Date();
