@@ -95,10 +95,9 @@ async function updateDnsRecord(req, res) {
     try {
     // #swagger.description = 'Use to request all posts'
     // #swagger.tags = ["Record"]
-        const { name, type } = req.body
+        const { name } = req.body
         let updateData = {
             name: name,
-            type: type
         }
         const recordID = req.params.id
         const zone_id = req.params.zone_id

@@ -1,119 +1,131 @@
-const {isExistCompanyByDbName} = require('../companyService');
-const axios = require('../../../utils/axiosUtil');
+const {
+  isExistCompanyByDbName,
+  getCompanyByDbName,
+} = require("../companyService");
+const axios = require("../../../utils/axiosUtil");
+const stringUtil = require("../../../utils/stringUtil");
 //các hàm liên quan module
 //lay DB name -> get cai company -> sosanh userid == user hien tai
 
 /**
  * Activate Module
- * @param userId
  * @param dbname
- * @param lang
- * @param password
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string, isSuccess: boolean}>}
  */
-async function activateModule(userId, dbname,
-                                lang, password, moduleId) {
+async function activateModule(data) {
+  try {
+    const { dbName, moduleId } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/modules`;
 
-    // Check the company is existed and the user is authorized to perform this action
-    const company = await isExistCompanyByDbName(dbname);
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    const url = `https://${dbname}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+      moduleId: moduleId,
+    };
 
-    try {
-        const data = {
-            name: dbname,
-            lang: lang,
-            password: password,
-            moduleId: moduleId
-        };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const result = await axios
+      .axiosPost(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
 
-        const result = await axios.axiosPost(url, data, {
-                'API_KEY': company.apiKey
-            });
-
-        return {
-            message: "Module activated",
-            isSuccess: true,
-            data: result
-        };
-
-    } catch (error) {
-        throw new Error("Error activating odoo module: " + error.message);
-    }
+    return {
+      message: result.data.message,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
  * Deactivate module
- * @param userId
  * @param dbName
- * @param lang
- * @param password
  * @param moduleId
  * @returns {Promise<{data: *, message: string}>}
  */
-async function deactivateModule(userId, dbName,
-                                lang, password, moduleId) {
+async function deactivateModule(data) {
+  try {
+    const { dbName, moduleId } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/modules`;
 
-    const company = await isExistCompanyByDbName(userId, dbName);
+    let hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+      moduleId: moduleId,
+    };
 
-    try {
-        const data = {
-            dbname: dbName,
-            lang: lang,
-            password: password,
-            moduleId: moduleId
-        };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const result = await axios
+      .axiosDeleteWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
 
-        const result = await axios.axiosDelete(url, data, {
-            'API_KEY': company.apiKey
-        });
-
-        return {
-            message: "Successfully deactivate module",
-            isSuccess: true,
-            data: result
-        };
-
-    } catch (error) {
-        throw new Error("Error at deactivate module: " + error.message);
-    }
+    return {
+      message: result.data.message,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
  * Upgrade module data
- * @param userId
  * @param dbName
- * @param lang
- * @param password
  * @param moduleId
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string}>}
  */
-async function upgradeModule(userId, dbName, lang, password, moduleId) {
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules`;
-    try {
-        const data = {
-            dbname: dbName,
-            lang: lang,
-            password: password,
-            moduleId: moduleId
-        };
+async function upgradeModule(data) {
+  try {
+    const { dbName, moduleId } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/modules`;
 
-        const result = await axios.axiosPatch(url, data, {
-            'API_KEY': company.apiKey
-        });
-        return {
-            message: "Successfully upgrade module",
-            isSuccess: true,
-            data: result
-        };
+    let hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    } catch (error) {
-        throw new Error("Error at deactivate module: " + error.message);
-    }
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+      moduleId: moduleId,
+    };
+
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    const result = await axios
+      .axiosPatch(url, {}, headers, paramsData)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+
+    return {
+      message: result.data.message,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
@@ -122,51 +134,77 @@ async function upgradeModule(userId, dbName, lang, password, moduleId) {
  * @param dbName
  * @returns {Promise<{data: axios.AxiosResponse<any>, message: string}>}
  */
-async function getAllModules(userId, dbName) {
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const params = `dbname=${dbName}`;
-    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/modules${params}`;
-    try {
-        const result = await axios.axiosGet(url, {
-            'API_KEY': company.apiKey
-        });
+async function getAllModules(data) {
+  try {
+    const { dbName } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/modules`;
 
-        return {
-            message: "Successfully get all modules",
-            isSuccess: true,
-            data: result
-        };
-    } catch (error) {
-        throw new Error("Error at deactivate module: " + error.message);
-    }
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
+
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+
+    return {
+      responseData: result.data,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
  * Get activated modules
- * @param userId
  * @param dbName
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
-async function getActivatedModules(userId, dbName) {
+async function getActivatedModules(data) {
+  try {
+    const { dbName } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/activated_modules/`;
 
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/activated_modules?dbname=${dbName}`;
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    const data = {
-        dbname: dbName
-    }
-    try {
-        const result = await axios.axiosGet(url, data, {});
-
-        return {
-            message: "Successfully get activated modules",
-            isSuccess: true,
-            data: result
-        };
-
-    } catch (error) {
-        throw new Error("Error at get activated modules: " + error.message);
-    }
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+    // const filterData = result.data.map(item => ({
+    //     id: item.id,
+    //     name: item.name
+    // }))
+    return {
+      responseData: result.data,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
@@ -175,33 +213,43 @@ async function getActivatedModules(userId, dbName) {
  * @param dbName
  * @returns {Promise<{data: *, message: string, isSuccess: boolean}>}
  */
-async function getUnactivatedModules(userId, dbName) {
+async function getUnactivatedModules(data) {
+  try {
+    const { dbName } = data;
+    const company = await isExistCompanyByDbName(dbName);
+    const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/databases/unactivated_modules`;
 
-    const company = await isExistCompanyByDbName(userId, dbName);
-    const url = `https://${process.env.ROOT_ODOO_DOMAIN}/web/database/unactivated_modules?dbname=${dbName}`;
+    const hashString = `${dbName}${company.apiKey}`;
+    const privateKey = stringUtil.hmacSHA512Hash(hashString);
 
-    const data = {
-        dbname: dbName
-    }
-    try {
-        const result = await axios.axiosGet(url, data, {});
+    const paramsData = {
+      dbname: dbName,
+      privatekey: privateKey,
+      timestamp: stringUtil.generateTimeStamp(),
+    };
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded",
+    };
 
-        return {
-            message: "Successfully get unactivated modules",
-            isSuccess: true,
-            data: result
-        };
-
-    } catch (error) {
-        throw new Error("Error at get unactivated modules: " + error.message);
-    }
+    const result = await axios
+      .axiosGetWithData(url, paramsData, headers)
+      .catch((error) => {
+        throw new Error(error.response.data.error);
+      });
+    return {
+      responseData: result.data,
+      status: result.status,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 module.exports = {
-    activateModule,
-    deactivateModule,
-    upgradeModule,
-    getAllModules,
-    getActivatedModules,
-    getUnactivatedModules
-}
+  activateModule,
+  deactivateModule,
+  upgradeModule,
+  getAllModules,
+  getActivatedModules,
+  getUnactivatedModules,
+};

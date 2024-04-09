@@ -15,7 +15,7 @@ router.get(apienpoint + "/:id", authenticateToken, authorizationMiddleware(["Adm
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.put(apienpoint, authenticateToken, companyControllers.updateCompany);
 // #swagger.security = [{ "apiKeyAuth": [] }]
-router.post(apienpoint+'/get-company-by-user', authenticateToken, companyControllers.getCompanyByUserId);
+router.post(`${apienpoint}/get-company-by-user`, authenticateToken, companyControllers.getCompanyByUserId);
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.post(apienpoint + '/upload-image-company', authenticateToken, upload.single('file'), companyControllers.uploadImageCompany);
 // #swagger.security = [{ "apiKeyAuth": [] }]

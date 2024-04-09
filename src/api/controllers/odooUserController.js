@@ -1,43 +1,38 @@
-const odooUserServices = require('../services/odooService/odooUserService');
+const odooUserServices = require("../services/odooService/odooUserService");
 
 async function getOdooUser(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooUser"]
-    try {
-        const userId = req.user.userId;
-        const dbname = req.user.dbname;
-        const {message, isSuccess, data} = await odooUserServices
-            .getOdooUserList(userId, dbname);
-        if (isSuccess) {
-            res.status(200).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error getting Odoo User", error});
-    }
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooUser"]
+  try {
+    const data = {
+      dbName: req.params.dbName,
+    };
+    const { responseData, status } = await odooUserServices.getOdooUserList(
+      data
+    );
+    res.status(status).json({ responseData });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error getting Odoo User", error: error.message });
+  }
 }
 
-async function getOdooUserRole(req, res){
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooUser"]
-    try {
-        const userId = req.user.userId;
-        const dbname = req.user.dbname;
-
-        const {message, isSuccess, data} = await odooUserServices
-            .GetOdooRole(userId, dbname);
-        if (isSuccess) {
-            res.status(200).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error getting Odoo Role", error});
-    }
+async function getOdooUserRole(req, res) {
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooUser"]
+  try {
+    const data = {
+      dbName: req.params.dbName,
+    };
+    const { responseData, status } = await odooUserServices.GetOdooRole(data);
+    res.status(status).json({ responseData });
+  } catch (error) {
+    res.status(500).json({ message: "Error getting Odoo Role", error: error.message });
+  }
 }
 
 module.exports = {
-    getOdooUser,
-    getOdooUserRole
-}
+  getOdooUser,
+  getOdooUserRole,
+};

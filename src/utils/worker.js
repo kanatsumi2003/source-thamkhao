@@ -1,6 +1,6 @@
 const amqp = require("amqplib");
 const axios = require("axios");
-const workerUtil = require('./workerUtil')
+const workerUtil = require("./workerUtil");
 const { FetchDataModel } = require("../models/fetchDataModel");
 
 async function startWorker(queueName) {
@@ -12,13 +12,14 @@ async function startWorker(queueName) {
   console.log(`Worker is waiting for messages in queue: ${queueName}`);
 
   channel.consume(queueName, async (msg) => {
+    try {
       if (msg !== null) {
         if (queueName === "fetchData") {
           console.log(`Received message: ${msg.content.toString()}`);
-  
+
           // Phân tích chuỗi JSON nhận được thành một đối tượng JavaScript
           const msgObject = JSON.parse(msg.content.toString());
-  
+
           // Sử dụng đối tượng để tạo một instance của FetchDataModel
           const fetchData = new FetchDataModel(
             msgObject.baseUrl,
@@ -26,11 +27,11 @@ async function startWorker(queueName) {
             msgObject.data,
             msgObject.headers
           );
-  
+
           console.log(
             `Processing FetchDataModel: ${fetchData.baseUrl}, ${fetchData.method}`
           );
-  
+
           // Thực hiện gọi API sử dụng axios với thông tin từ fetchData
           try {
             const response = await axios({
@@ -50,16 +51,60 @@ async function startWorker(queueName) {
         } else if (queueName === "createOdooAndDNS") {
           try {
             await workerUtil.createOdooAndDNS(msg);
-            
           } catch (error) {
             console.log(error.message);
+          }
+        } else if (queueName === "activeOdooModule") {
+          try {
+            await workerUtil.activeOdooModule(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        } else if (queueName === "deactiveOdooModule") {
+          try {
+            await workerUtil.deactiveOdooModule(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        } else if (queueName === "upgradeOdooModule") {
+          try {
+            await workerUtil.upgradeOdooModule(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        } else if (queueName === "duplicateDatabase") {
+          try {
+            await workerUtil.duplicateOdooDatabase(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        } else if (queueName === "stopDatabase") {
+          try {
+            await workerUtil.stopOdooDatabase(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
+        } else if (queueName === "startOdooDatabaseAgain") {
+          try {
+            await workerUtil.startOdooDatabaseAgain(msg);
+          } catch (error) {
+            throw new Error(error.message);
           }
         }
         channel.ack(msg); // Acknowledge the mcessage
       }
-    
-  })
+    } catch (error) {
+      channel.reject(msg, false);
+      console.log(error.message);
+      console.log("error occurs, reject message")
+    }
+  });
 }
-
+startWorker("startOdooDatabaseAgain");
+startWorker("stopDatabase");
+startWorker("duplicateDatabase");
+startWorker("deactiveOdooModule");
+startWorker("upgradeOdooModule");
+startWorker("activeOdooModule");
 startWorker("fetchData");
 startWorker("createOdooAndDNS");

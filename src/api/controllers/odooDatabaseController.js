@@ -2,96 +2,94 @@ const odooDatabaseService = require("../services/odooService/odooDatabaseService
 const companyService = require("../services/companyService");
 const queue = require("../../utils/sendQueue");
 async function duplicateDatabases(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooDatabase"]
-    try {
-        const {lang, password, login, phone, newDbName} = req.body;
-        const userId = req.user.userId;
-        const dbName = req.user.dbname;
-        const {message, isSuccess, data} = await odooDatabaseService
-            .duplicateOdooDatabase(userId, dbName, lang, password, login, phone, newDbName);
-        if (isSuccess) {
-            res.status(201).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error duplicating Odoo Database", error});
-    }
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const message = { 
+      dbName: req.params.dbName,
+      newDbName: req.body.newDbName,
+    };
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("duplicateDatabase", Buffer.from(messageString));
+    res.status(200).json("Duplicating");
+  } catch (error) {
+    res.status(500).json({
+      message: "Error duplicating Odoo Database",
+      error,
+    });
+  }
 }
 
 async function stopOdooDatabase(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooDatabase"]
-    try {
-        const {stringName, password} = req.body;
-        const dbName = req.user.dbname;
-        const userId = req.user.userId;
-        const {message, isSuccess, data} = await odooDatabaseService
-            .stopDatabase(userId, dbName, stringName, password);
-        if (isSuccess) {
-            res.status(201).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error stopping Odoo Database", error});
-    }
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const message = { 
+      dbName: req.params.dbName,
+    };
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("stopDatabase", Buffer.from(messageString));
+    res.status(200).json("Stopping");
+  } catch (error) {
+    res.status(500).json({ message: "Error stopping Odoo Database", error });
+  }
 }
 
 async function changeOdooDBName(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooDatabase"]
-    try {
-        const {newDbName} = req.body;
-        const dbName = req.user.dbname;
-        const userId = req.user.userId;
-        const {message, isSuccess, data} = await odooDatabaseService
-            .changeDBName(userId, dbName, newDbName);
-        if (isSuccess) {
-            res.status(201).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error changing Odoo Database Name", error});
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const data = {
+      newDbName: req.body,
+      userId: req.params.userId,
+    };
+    const { message, isSuccess } = await odooDatabaseService.changeDBName(data);
+    if (isSuccess) {
+      res.status(201).json({ message });
+    } else {
+      res.status(400).json({ message });
     }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error changing Odoo Database Name", error });
+  }
 }
 
 async function changeOdooDBPassword(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooDatabase"]
-    try {
-        const {newPassword} = req.body;
-        const dbName = req.user.dbname;
-        const userId = req.user.userId;
-        const {message, isSuccess, data} = await odooDatabaseService
-            .changeDBPassword(userId, dbName, newPassword);
-        if (isSuccess) {
-            res.status(201).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error changing Odoo Database Password", error});
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const { newPassword } = req.body;
+    const dbName = req.user.dbname;
+    const userId = req.user.userId;
+    const { message, isSuccess, data } =
+      await odooDatabaseService.changeDBPassword(userId, dbName, newPassword);
+    if (isSuccess) {
+      res.status(201).json({ message, data });
+    } else {
+      res.status(400).json({ message, data });
     }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error changing Odoo Database Password", error });
+  }
 }
 
 async function startOdooDatabaseAgain(req, res) {
-    // #swagger.description = 'Use to request all posts'
-    // #swagger.tags = ["OdooDatabase"]
-    try {
-        const {original_name, new_name, password} = req.body;
-        const {message, isSuccess, data} = await odooDatabaseService
-            .startDatabaseAgain(original_name, new_name, password);
-        if (isSuccess) {
-            res.status(201).json({message, data});
-        } else {
-            res.status(400).json({message, data});
-        }
-    } catch (error) {
-        res.status(500).json({message: "Error restart Odoo Database", error});
-    }
+  // #swagger.description = 'Use to request all posts'
+  // #swagger.tags = ["OdooDatabase"]
+  try {
+    const message = { 
+      dbName: req.params.dbName,
+    };
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("startOdooDatabaseAgain", Buffer.from(messageString));
+    res.status(200).json("Restoring");
+  } catch (error) {
+    res.status(500).json({ message: "Error restart Odoo Database", error });
+  }
 }
 
 //api create odoo by userid (truyền userid) => tạo queue gắn userid
@@ -104,26 +102,27 @@ async function reCreateOdooDatabase(req, res) {
     const userId = req.params.userId;
     let company = await companyService.getCompanyInactiveByUserId(userId); //query công ty chưa được active để tạo lại db + dns record
     if (company == null) {
-      return res.status(400).json({ message: "This user has no inactive company" });
+      return res
+        .status(400)
+        .json({ message: "This user has no inactive company" });
     }
-      const message = {
-        userId: userId,
-        companyId: company._id,
-      };
-      let messageString = JSON.stringify(message);
+    const message = {
+      userId: userId,
+      companyId: company._id,
+    };
+    let messageString = JSON.stringify(message);
 
-      await queue.sendToQueue("createOdooAndDNS", Buffer.from(messageString));
-      return res.status(200).json({ message: "Recreating" });
-
+    await queue.sendToQueue("createOdooAndDNS", Buffer.from(messageString));
+    return res.status(200).json({ message: "Recreating" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 }
 module.exports = {
-    duplicateDatabases,
-    stopOdooDatabase,
-    changeOdooDBName,
-    changeOdooDBPassword,
-    reCreateOdooDatabase,
-    startOdooDatabaseAgain
-}
+  duplicateDatabases,
+  stopOdooDatabase,
+  changeOdooDBName,
+  changeOdooDBPassword,
+  reCreateOdooDatabase,
+  startOdooDatabaseAgain,
+};
