@@ -90,6 +90,12 @@ async function startWorker(queueName) {
           } catch (error) {
             throw new Error(error.message);
           }
+        } else if (queueName === "changeOdooPassDBPassword") {
+          try {
+            await workerUtil.changeOdooDBPassword(msg);
+          } catch (error) {
+            throw new Error(error.message);
+          }
         }
         channel.ack(msg); // Acknowledge the mcessage
       }
@@ -100,6 +106,7 @@ async function startWorker(queueName) {
     }
   });
 }
+startWorker("changeOdooPassDBPassword");
 startWorker("startOdooDatabaseAgain");
 startWorker("stopDatabase");
 startWorker("duplicateDatabase");

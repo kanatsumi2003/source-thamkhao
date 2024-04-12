@@ -61,15 +61,14 @@ async function changeOdooDBPassword(req, res) {
   // #swagger.tags = ["OdooDatabase"]
   try {
     const { newPassword } = req.body;
-    const dbName = req.user.dbname;
-    const userId = req.user.userId;
-    const { message, isSuccess, data } =
-      await odooDatabaseService.changeDBPassword(userId, dbName, newPassword);
-    if (isSuccess) {
-      res.status(201).json({ message, data });
-    } else {
-      res.status(400).json({ message, data });
-    }
+    const dbName = req.params.dbName;
+    const message = {
+      newPassword: newPassword,
+      dbName: dbName,
+    };
+    const messageString = JSON.stringify(message);
+    await queue.sendToQueue("changeOdooPassDBPassword", Buffer.from(messageString));
+    res.status(200).json("Changing!");
   } catch (error) {
     res
       .status(500)
@@ -88,7 +87,7 @@ async function startOdooDatabaseAgain(req, res) {
     await queue.sendToQueue("startOdooDatabaseAgain", Buffer.from(messageString));
     res.status(200).json("Restoring");
   } catch (error) {
-    res.status(500).json({ message: "Error restart Odoo Database", error });
+    res.status(500).json({ message: "Error change Odoo Database", error });
   }
 }
 

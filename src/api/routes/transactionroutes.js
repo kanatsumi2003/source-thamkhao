@@ -3,7 +3,7 @@ const router = express.Router();
 const transactionController = require("../controllers/transactionController");
 const { authenticateToken } = require('../../middleware/authMiddleware');
 
-const apiEndpoint = 'transactions';
+const apiEndpoint = '/transactions';
 
 // #swagger.security = [{ "apiKeyAuth": [] }]
 router.get(apiEndpoint + "/:id", authenticateToken, transactionController.getTransactionById);

@@ -256,7 +256,36 @@ async function startOdooDatabaseAgain(msg) {
     throw new Error(error.message)
   }
 }
+async function changeOdooDBPassword(msg) {
+  try {
+    const message = JSON.parse(msg.content);
+    const {dbName, newPassword} = message;
+    const company = await companyService.isExistCompanyByDbName(dbName);
+    
+    const data = {
+      dbName: dbName,
+      newPassword: newPassword,
+    };
+
+    const result = await odooDatabaseService.changeDBPassword(data);
+    if(!result.error) {
+      const mailData = {
+        companyName: company.companyName,
+      };
+      await sendMail (
+        company.companyName,
+        "Restore database notification",
+        mailData,
+        "changeOdooDBPassword.ejs"
+      )
+    };
+     
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 module.exports = {
+  changeOdooDBPassword,
   startOdooDatabaseAgain,
   stopOdooDatabase,
   duplicateOdooDatabase,

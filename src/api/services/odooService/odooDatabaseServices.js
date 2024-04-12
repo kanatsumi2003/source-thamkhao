@@ -164,9 +164,9 @@ async function changeDBName(data) {
   }
 }
 
-async function changeDBPassword(userId, dbName, password, newPassword) {
+async function changeDBPassword(data) {
   ///const company = await isExistCompanyByDbName(userId, dbName);
-  const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/change_password`;
+  const url = `https://${dbName}.${process.env.ROOT_ODOO_DOMAIN}/web/database/change_password_v2`;
   try {
     const data = {
       password: password,

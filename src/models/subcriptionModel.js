@@ -4,17 +4,14 @@ const BaseModel = require("./baseModel");
 
 // dbname domainname, startdate, enddate, total invoices, total storage// name, image, description, monthly prices, yearly price, total //sendemail
 class Subcription {
-    constructor(name, total_invoices, total_storage, image, description, monthly_prices, yearly_prices, total){
+    constructor(name, total_invoices, total_storage, image, description, monthly_prices, yearly_prices){
         this.name = name,
-        this.dbName = dbName,
-        this.domainName = domainName,
         this.total_invoices = total_invoices,
         this.total_storage = total_storage,
         this.image = image,
         this.description = description,
         this.monthly_prices = monthly_prices,
-        this.yearly_prices = yearly_prices,
-        this.total = total
+        this.yearly_prices = yearly_prices
     }
 }
 class SubCriptionWithBase extends BaseModel {
