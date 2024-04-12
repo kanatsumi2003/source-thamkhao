@@ -12,6 +12,7 @@ async function createCompany(req, res) {
   // #swagger.description = 'Use to request all posts'
   // #swagger.tags = ["Companies"]
   try {
+    const hash = req.params.hash
     console.log("hello");
     console.log(req.body.emailCompany);
     // const companyNameDomain = stringUltil.generateSubdomain(req.body.emailCompany);
